@@ -11,26 +11,26 @@ class Bolter<S extends Equatable> {
 
   final _bolter = StreamController<S>.broadcast();
 
-  ValueStream<V> stream<V>(Mapper<V, S> mapper) => ValueStream(
-        _Hole(_bolter.stream.map((event) => mapper(state))).stream, mapper(state));
+  ValueStream<V> stream<V>(Mapper<V, S> mapper) =>
+      _Hole(ValueStream(_bolter.stream.map((event) => mapper(state)), mapper(state))).stream;
 
   void shake() => _bolter.sink.add(state);
 }
 
 class _Hole<V> {
   int lastKnownHashcode;
-  final Stream<V> _stream;
+  final ValueStream<V> _stream;
 
   _Hole(this._stream);
 
-  Stream<V> get stream => _stream.map((event) {
-    final newHashCode = _ComparableWrapper(event).hashCode;
-    if (newHashCode == lastKnownHashcode) {
-      return null;
-    }
-    lastKnownHashcode = newHashCode;
-    return event;
-  }).where((event) => event != null);
+  ValueStream<V> get stream => _stream.map((event) {
+        final newHashCode = _ComparableWrapper(event).hashCode;
+        if (newHashCode == lastKnownHashcode) {
+          return null;
+        }
+        lastKnownHashcode = newHashCode;
+        return event;
+      }).where((event) => event != null);
 }
 
 class _ComparableWrapper<V> extends Equatable {
@@ -57,8 +57,8 @@ class ValueStream<T> implements Stream<T> {
 
   @override
   ValueStream<T> asBroadcastStream(
-      {void Function(StreamSubscription<T> subscription) onListen,
-        void Function(StreamSubscription<T> subscription) onCancel}) =>
+          {void Function(StreamSubscription<T> subscription) onListen,
+          void Function(StreamSubscription<T> subscription) onCancel}) =>
       ValueStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel), value);
 
   @override
@@ -179,6 +179,6 @@ class ValueStream<T> implements Stream<T> {
 
   @override
   StreamSubscription<T> listen(void Function(T event) onData,
-      {Function onError, void Function() onDone, bool cancelOnError}) =>
+          {Function onError, void Function() onDone, bool cancelOnError}) =>
       stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }
