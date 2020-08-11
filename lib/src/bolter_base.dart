@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 
 typedef Mapper<V, S> = V Function(S state);
 
-class Bolter<S extends Equatable> {
+class Bolter<S> {
   final S state;
 
   Bolter(this.state);
