@@ -11,8 +11,9 @@ class Bolter<S> {
 
   final _bolter = StreamController<S>.broadcast();
 
-  ValueStream<V> stream<V>(Mapper<V, S> mapper) =>
-      _Hole(ValueStream(_bolter.stream.map((event) => mapper(state)), mapper(state))).stream;
+  ValueStream<V> stream<V>(Mapper<V, S> mapper) => _Hole(ValueStream(
+          _bolter.stream.map((event) => mapper(state)), mapper(state)))
+      .stream;
 
   void shake() => _bolter.sink.add(state);
 }
@@ -59,7 +60,9 @@ class ValueStream<T> implements Stream<T> {
   ValueStream<T> asBroadcastStream(
           {void Function(StreamSubscription<T> subscription) onListen,
           void Function(StreamSubscription<T> subscription) onCancel}) =>
-      ValueStream(stream.asBroadcastStream(onListen: onListen, onCancel: onCancel), value);
+      ValueStream(
+          stream.asBroadcastStream(onListen: onListen, onCancel: onCancel),
+          value);
 
   @override
   ValueStream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
@@ -83,7 +86,8 @@ class ValueStream<T> implements Stream<T> {
       ValueStream(stream.distinct(equals), value);
 
   @override
-  ValueStream<T> handleError(Function onError, {bool Function(Error error) test}) =>
+  ValueStream<T> handleError(Function onError,
+          {bool Function(Error error) test}) =>
       ValueStream(stream.handleError(onError, test: test), value);
 
   @override
@@ -105,7 +109,8 @@ class ValueStream<T> implements Stream<T> {
       ValueStream(stream.takeWhile(test), value);
 
   @override
-  ValueStream<T> timeout(Duration timeLimit, {void Function(EventSink<T> sink) onTimeout}) =>
+  ValueStream<T> timeout(Duration timeLimit,
+          {void Function(EventSink<T> sink) onTimeout}) =>
       ValueStream(stream.timeout(timeLimit, onTimeout: onTimeout), value);
 
   @override
@@ -113,7 +118,8 @@ class ValueStream<T> implements Stream<T> {
       ValueStream(stream.transform(streamTransformer), value as S);
 
   @override
-  ValueStream<T> where(bool Function(T event) test) => ValueStream(stream.where(test), value);
+  ValueStream<T> where(bool Function(T event) test) =>
+      ValueStream(stream.where(test), value);
 
   @override
   ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
@@ -133,7 +139,8 @@ class ValueStream<T> implements Stream<T> {
       stream.firstWhere(test, orElse: orElse);
 
   @override
-  Future<S> fold<S>(S initialValue, S Function(S previous, T element) combine) =>
+  Future<S> fold<S>(
+          S initialValue, S Function(S previous, T element) combine) =>
       stream.fold(initialValue, combine);
 
   @override
@@ -162,7 +169,8 @@ class ValueStream<T> implements Stream<T> {
   Future pipe(StreamConsumer<T> streamConsumer) => stream.pipe(streamConsumer);
 
   @override
-  Future<T> reduce(T Function(T previous, T element) combine) => stream.reduce(combine);
+  Future<T> reduce(T Function(T previous, T element) combine) =>
+      stream.reduce(combine);
 
   @override
   Future<T> get single => stream.single;
@@ -180,5 +188,6 @@ class ValueStream<T> implements Stream<T> {
   @override
   StreamSubscription<T> listen(void Function(T event) onData,
           {Function onError, void Function() onDone, bool cancelOnError}) =>
-      stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+      stream.listen(onData,
+          onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }

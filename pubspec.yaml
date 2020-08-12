@@ -1,7 +1,7 @@
 name: bolter
-description: A starting point for Dart libraries or applications.
 version: 0.0.1
-# homepage: https://www.example.com
+description: Simplest mutable state manager.
+homepage: https://github.com/Renesanse/bolter
 
 environment:
   sdk: '>=2.8.1 <3.0.0'

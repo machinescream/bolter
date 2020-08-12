@@ -1,7 +1,4 @@
-A library for Dart developers.
-
-Created from templates made available by Stagehand under a BSD-style
-[license](https://github.com/dart-lang/stagehand/blob/master/LICENSE).
+Simplest mutable state manager.
 
 ## Usage
 
@@ -9,14 +6,24 @@ A simple usage example:
 
 ```dart
 import 'package:bolter/bolter.dart';
+import 'package:equatable/equatable.dart';
 
-main() {
-  var awesome = new Awesome();
+// ignore: must_be_immutable
+class State extends Equatable {
+  var value = 0;
+  
+  @override
+  List<Object> get props => [value];
+}
+
+void main() {
+  final bolter = Bolter(State());
+  bolter.stream((state) => state.value).stream.listen((event) {
+    print(event);
+  });
+  bolter.state.value++;
+  bolter.shake();
+  bolter.state.value++;
+  bolter.shake();
 }
 ```
-
-## Features and bugs
-
-Please file feature requests and bugs at the [issue tracker][tracker].
-
-[tracker]: http://example.com/issues/replaceme

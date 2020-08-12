@@ -1,3 +1,3 @@
-## 1.0.0
+## [0.0.1] - 12 aug 2020
 
-- Initial version, created by Stagehand
+*0.0.1 initial version
