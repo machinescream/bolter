@@ -18,7 +18,7 @@ class State extends Equatable {
 
 void main() {
   final bolter = Bolter(State());
-  bolter.stream((state) => state.value).stream.listen((event) {
+  bolter.stream((state) => state.value).listen((event) {
     print(event);
   });
   bolter.state.value++;

@@ -1,6 +1,6 @@
 name: bolter
-version: 0.0.1
-description: Simplest mutable state manager.
+version: 0.0.2
+description: Simplest mutable state manager powered by dart streams and it's extensions
 homepage: https://github.com/Renesanse/bolter
 
 environment:
