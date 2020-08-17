@@ -24,9 +24,7 @@ class _Hole<V> {
   int lastKnownHashcode;
   final ValueStream<V> _stream;
 
-  _Hole(this._stream) {
-    lastKnownHashcode = _ComparableWrapper(_stream.value).hashCode;
-  }
+  _Hole(this._stream);
 
   ValueStream<V> get stream => _stream.map((event) {
         final newHashCode = _ComparableWrapper(event).hashCode;
