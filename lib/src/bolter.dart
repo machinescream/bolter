@@ -1,8 +1,10 @@
 import 'dart:async';
+import 'dart:wasm';
 
 import 'package:equatable/equatable.dart';
 
 typedef Mapper<V, S> = V Function(S state);
+typedef Change<S> = Void Function(S state);
 
 class Bolter<S> {
   final S state;
@@ -15,14 +17,19 @@ class Bolter<S> {
           _bolter.stream.map((event) => mapper(state)), mapper(state)))
       .stream;
 
-  void shake() => _bolter.sink.add(state);
+  void shake<V>({Mapper<V, S> change}) {
+    change?.call(state);
+    _bolter.sink.add(state);
+  }
 }
 
 class _Hole<V> {
   int lastKnownHashcode;
   final ValueStream<V> _stream;
 
-  _Hole(this._stream);
+  _Hole(this._stream) {
+    lastKnownHashcode = _ComparableWrapper(_stream.value).hashCode;
+  }
 
   ValueStream<V> get stream => _stream.map((event) {
         final newHashCode = _ComparableWrapper(event).hashCode;
