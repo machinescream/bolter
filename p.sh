@@ -1,4 +1,5 @@
 dartfmt -w example lib
+dartanalyzer lib
 echo 'breaking, major, minor, patch, build ?'
 read vt
 cider bump "${vt}"
