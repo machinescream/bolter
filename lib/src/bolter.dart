@@ -1,10 +1,7 @@
 import 'dart:async';
-import 'dart:wasm';
-
 import 'package:equatable/equatable.dart';
 
 typedef Mapper<V, S> = V Function(S state);
-typedef Change<S> = Void Function(S state);
 
 class Bolter<S> {
   final S state;
