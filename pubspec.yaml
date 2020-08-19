@@ -1,5 +1,5 @@
 name: bolter
-version: 0.0.5+1
+version: 0.0.5+2
 description: Simplest mutable state manager powered by dart streams and it's extensions
 homepage: https://github.com/Renesanse/bolter
 

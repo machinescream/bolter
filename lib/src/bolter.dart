@@ -67,12 +67,12 @@ class ValueStream<T> implements Stream<T> {
           value);
 
   @override
-  Stream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
-      stream.asyncExpand(convert);
+  ValueStream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
+      ValueStream<E>(stream.asyncExpand(convert), value as E);
 
   @override
-  Stream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) =>
-      stream.asyncMap(convert);
+  ValueStream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) =>
+      ValueStream(stream.asyncMap(convert), convert(value));
 
   @override
   ValueStream<R> cast<R>() => ValueStream(stream.cast<R>(), value as R);
@@ -116,16 +116,16 @@ class ValueStream<T> implements Stream<T> {
       ValueStream(stream.timeout(timeLimit, onTimeout: onTimeout), value);
 
   @override
-  Stream<S> transform<S>(StreamTransformer<T, S> streamTransformer) =>
-      stream.transform(streamTransformer);
+  ValueStream<S> transform<S>(StreamTransformer<T, S> streamTransformer) =>
+      ValueStream(stream.transform(streamTransformer), value as S);
 
   @override
   ValueStream<T> where(bool Function(T event) test) =>
-      ValueStream(stream.where(test), test(value) ? value : null);
+      ValueStream(stream.where(test), value);
 
   @override
-  Stream<S> expand<S>(Iterable<S> Function(T element) convert) =>
-      stream.expand(convert);
+  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
+      ValueStream(stream.expand(convert), value as S);
 
   @override
   Future<T> elementAt(int index) => stream.elementAt(index);
