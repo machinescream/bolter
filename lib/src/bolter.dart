@@ -62,7 +62,9 @@ class ValueStream<T> implements Stream<T> {
   ValueStream<T> asBroadcastStream(
           {void Function(StreamSubscription<T> subscription) onListen,
           void Function(StreamSubscription<T> subscription) onCancel}) =>
-      this;
+      ValueStream(
+          stream.asBroadcastStream(onListen: onListen, onCancel: onCancel),
+          value);
 
   @override
   Stream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
