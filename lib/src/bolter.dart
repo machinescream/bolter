@@ -62,17 +62,15 @@ class ValueStream<T> implements Stream<T> {
   ValueStream<T> asBroadcastStream(
           {void Function(StreamSubscription<T> subscription) onListen,
           void Function(StreamSubscription<T> subscription) onCancel}) =>
-      ValueStream(
-          stream.asBroadcastStream(onListen: onListen, onCancel: onCancel),
-          value);
+      this;
 
   @override
-  ValueStream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
-      ValueStream<E>(stream.asyncExpand(convert), value as E);
+  Stream<E> asyncExpand<E>(Stream<E> Function(T event) convert) =>
+      stream.asyncExpand(convert);
 
   @override
-  ValueStream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) =>
-      ValueStream(stream.asyncMap(convert), convert(value));
+  Stream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) =>
+      stream.asyncMap(convert);
 
   @override
   ValueStream<R> cast<R>() => ValueStream(stream.cast<R>(), value as R);
@@ -121,7 +119,7 @@ class ValueStream<T> implements Stream<T> {
 
   @override
   ValueStream<T> where(bool Function(T event) test) =>
-      ValueStream(stream.where(test), value);
+      ValueStream(stream.where(test), test(value) ? value : null);
 
   @override
   ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
