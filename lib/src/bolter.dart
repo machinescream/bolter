@@ -1,4 +1,5 @@
 import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 
 typedef Mapper<V, S> = V Function(S state);
@@ -10,30 +11,13 @@ class Bolter<S> {
 
   final _bolter = StreamController<S>.broadcast();
 
-  ValueStream<V> stream<V>(Mapper<V, S> mapper) => _Hole(ValueStream(
-          _bolter.stream.map((event) => mapper(state)), mapper(state)))
-      .stream;
+  ValueStream<V> stream<V>(Mapper<V, S> mapper) =>
+      ValueStream(_bolter.stream.map(mapper), mapper(state));
 
   void shake<V>({Mapper<V, S> change}) {
     change?.call(state);
     _bolter.sink.add(state);
   }
-}
-
-class _Hole<V> {
-  int lastKnownHashcode;
-  final ValueStream<V> _stream;
-
-  _Hole(this._stream);
-
-  ValueStream<V> get stream => _stream.map((event) {
-        final newHashCode = _ComparableWrapper(event).hashCode;
-        if (newHashCode == lastKnownHashcode) {
-          return null;
-        }
-        lastKnownHashcode = newHashCode;
-        return event;
-      }).where((event) => event != null);
 }
 
 class _ComparableWrapper<V> extends Equatable {
@@ -46,12 +30,21 @@ class _ComparableWrapper<V> extends Equatable {
 }
 
 class ValueStream<T> implements Stream<T> {
-  final Stream<T> stream;
+  final Stream<T> _stream;
   T _lastVal;
+  int lastKnownHashcode;
 
-  ValueStream(this.stream, this._lastVal) {
-    stream.map((T val) => _lastVal = val);
-  }
+  ValueStream(this._stream, this._lastVal);
+
+  Stream<T> get stream => _stream.map((event) {
+        final newHashCode = _ComparableWrapper(event).hashCode;
+        if (newHashCode == lastKnownHashcode) {
+          return null;
+        }
+        lastKnownHashcode = newHashCode;
+        _lastVal = event;
+        return event;
+      }).where((event) => event != null);
 
   T get value => _lastVal;
 

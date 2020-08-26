@@ -1,25 +1,30 @@
 import 'package:bolter/bolter.dart';
-import 'package:equatable/equatable.dart';
-import 'package:stream_transform/stream_transform.dart';
 
-// ignore: must_be_immutable
-class State extends Equatable {
-  var value = 0;
-
-  @override
-  List<Object> get props => [value];
+class State {
+  final l = [];
 }
 
-void main() {
-  final bolter = Bolter(State());
-  bolter
-      .stream((state) => state.value)
-      .debounce(Duration(seconds: 1))
-      .listen((event) {
+void main() async {
+  final b = Bolter(State());
+  b.stream((state) => state.l).map((event) => event.length > 2).listen((event) {
     print(event);
   });
-  bolter.state.value++;
-  bolter.shake();
-  bolter.state.value++;
-  bolter.shake();
+  b.state.l.add(1);
+  await Future.delayed(Duration(seconds: 2));
+  b.shake();
+  b.state.l.add(2);
+  await Future.delayed(Duration(seconds: 2));
+  b.shake();
+  b.state.l.add(3);
+  await Future.delayed(Duration(seconds: 2));
+  b.shake();
+  b.state.l.add(4);
+  await Future.delayed(Duration(seconds: 2));
+  b.shake();
+  b.state.l.add(4);
+  await Future.delayed(Duration(seconds: 2));
+  b.shake();
+  b.state.l.add(4);
+  await Future.delayed(Duration(seconds: 2));
+  b.shake();
 }
