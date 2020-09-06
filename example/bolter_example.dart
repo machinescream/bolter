@@ -18,13 +18,13 @@ void main() async {
   b.state.l.add(3);
   await Future.delayed(Duration(seconds: 2));
   b.shake();
-  b.state.l.add(4);
+  b.state.l.removeLast();
   await Future.delayed(Duration(seconds: 2));
   b.shake();
-  b.state.l.add(4);
+  b.state.l.removeLast();
   await Future.delayed(Duration(seconds: 2));
   b.shake();
-  b.state.l.add(4);
+  b.state.l.removeLast();
   await Future.delayed(Duration(seconds: 2));
   b.shake();
 }

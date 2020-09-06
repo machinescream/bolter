@@ -10,8 +10,11 @@ import 'package:equatable/equatable.dart';
 
 // ignore: must_be_immutable
 class State extends Equatable {
-  var value = 0;
+  var _value = 0;
+  int get value => _value;
   
+  void incr() => _value++;
+
   @override
   List<Object> get props => [value];
 }
@@ -21,9 +24,9 @@ void main() {
   bolter.stream((state) => state.value).listen((event) {
     print(event);
   });
-  bolter.state.value++;
+  bolter.state.incr();
   bolter.shake();
-  bolter.state.value++;
+  bolter.state.incr();
   bolter.shake();
 }
 ```
