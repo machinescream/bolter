@@ -36,14 +36,9 @@ class ComparableWrapper<V> extends Equatable {
 class ValueStream<T> implements Stream<T> {
   final Stream<T> _stream;
   T _lastVal;
-  Object _error;
   int lastKnownHashcode;
 
-  ValueStream(this._stream, this._lastVal) {
-    _stream.handleError((error) {
-      _error = error;
-    });
-  }
+  ValueStream(this._stream, this._lastVal);
 
   Stream<T> get stream => _stream.map((event) {
         final newHashCode = ComparableWrapper(event).hashCode;
@@ -56,8 +51,6 @@ class ValueStream<T> implements Stream<T> {
       }).where((event) => event != null);
 
   T get value => _lastVal;
-
-  Object get error => _error;
 
   @override
   Future<bool> any(bool Function(T element) test) => stream.any(test);
