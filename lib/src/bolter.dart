@@ -19,9 +19,9 @@ class Bolter<S> {
     _bolter.sink.add(state);
   }
 
-  void dispose() {
-    _bolter.close();
-  }
+  void addError(Object error) => _bolter.addError(error);
+
+  void dispose() => _bolter.close();
 }
 
 class ComparableWrapper<V> extends Equatable {
