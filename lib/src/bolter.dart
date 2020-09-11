@@ -18,12 +18,16 @@ class Bolter<S> {
     change?.call(state);
     _bolter.sink.add(state);
   }
+
+  void dispose() {
+    _bolter.close();
+  }
 }
 
-class _ComparableWrapper<V> extends Equatable {
+class ComparableWrapper<V> extends Equatable {
   final V _value;
 
-  const _ComparableWrapper(this._value);
+  const ComparableWrapper(this._value);
 
   @override
   List<Object> get props => [_value];
@@ -32,12 +36,17 @@ class _ComparableWrapper<V> extends Equatable {
 class ValueStream<T> implements Stream<T> {
   final Stream<T> _stream;
   T _lastVal;
+  Object _error;
   int lastKnownHashcode;
 
-  ValueStream(this._stream, this._lastVal);
+  ValueStream(this._stream, this._lastVal) {
+    _stream.handleError((error) {
+      _error = error;
+    });
+  }
 
   Stream<T> get stream => _stream.map((event) {
-        final newHashCode = _ComparableWrapper(event).hashCode;
+        final newHashCode = ComparableWrapper(event).hashCode;
         if (newHashCode == lastKnownHashcode) {
           return null;
         }
@@ -47,6 +56,8 @@ class ValueStream<T> implements Stream<T> {
       }).where((event) => event != null);
 
   T get value => _lastVal;
+
+  Object get error => _error;
 
   @override
   Future<bool> any(bool Function(T element) test) => stream.any(test);
