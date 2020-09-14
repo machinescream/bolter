@@ -19,8 +19,6 @@ class Bolter<S> {
     _bolter.sink.add(state);
   }
 
-  void addError(Object error) => _bolter.addError(error);
-
   void dispose() => _bolter.close();
 }
 
