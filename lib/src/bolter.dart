@@ -186,7 +186,8 @@ class ValueStream<T> implements Stream<T> {
           {Function onError, void Function() onDone, bool cancelOnError}) =>
       stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
-
-  ValueStream<T> tie(List<Stream> streams) => ValueStream(
-      stream.mergeAll(streams.map((e) => e.map((event) => value))), value);
 }
+
+ValueStream<T> shrine<T>(List<Stream> streams, T Function() getter) =>
+    ValueStream(
+        Stream.empty().mergeAll(streams).map((e) => getter()), getter());
