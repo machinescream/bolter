@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:equatable/equatable.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 typedef Mapper<V, S> = V Function(S state);
 
@@ -185,4 +186,7 @@ class ValueStream<T> implements Stream<T> {
           {Function onError, void Function() onDone, bool cancelOnError}) =>
       stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+
+  ValueStream<T> tie(List<Stream> streams) => ValueStream(
+      stream.mergeAll(streams.map((e) => e.map((event) => value))), value);
 }

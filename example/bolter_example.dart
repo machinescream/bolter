@@ -10,21 +10,5 @@ void main() async {
     print(event);
   });
   b.state.l.add(1);
-  await Future.delayed(Duration(seconds: 2));
-  b.shake();
-  b.state.l.add(2);
-  await Future.delayed(Duration(seconds: 2));
-  b.shake();
-  b.state.l.add(3);
-  await Future.delayed(Duration(seconds: 2));
-  b.shake();
-  b.state.l.removeLast();
-  await Future.delayed(Duration(seconds: 2));
-  b.shake();
-  b.state.l.removeLast();
-  await Future.delayed(Duration(seconds: 2));
-  b.shake();
-  b.state.l.removeLast();
-  await Future.delayed(Duration(seconds: 2));
   b.shake();
 }
