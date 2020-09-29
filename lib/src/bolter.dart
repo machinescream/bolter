@@ -188,6 +188,6 @@ class ValueStream<T> implements Stream<T> {
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }
 
-ValueStream<T> shrine<T>(List<Stream> streams, T Function() getter) =>
+ValueStream<T> shrine<T>(Iterable<Stream> streams, T Function() getter) =>
     ValueStream(
         Stream.empty().mergeAll(streams).map((e) => getter()), getter());
