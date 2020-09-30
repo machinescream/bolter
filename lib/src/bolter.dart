@@ -39,6 +39,11 @@ class ValueStream<T> implements Stream<T> {
 
   ValueStream(this._stream, this._lastVal);
 
+  factory ValueStream.shrine(Iterable<Stream> streams, T Function() getter) {
+    return ValueStream(
+        const Stream.empty().mergeAll(streams).map((e) => getter()), getter());
+  }
+
   Stream<T> get stream => _stream.map((event) {
         final newHashCode = ComparableWrapper(event).hashCode;
         if (newHashCode == lastKnownHashcode) {
@@ -83,7 +88,7 @@ class ValueStream<T> implements Stream<T> {
 
   @override
   ValueStream<T> handleError(Function onError,
-          {bool Function(Error error) test}) =>
+          {bool Function(dynamic error) test}) =>
       ValueStream(stream.handleError(onError, test: test), value);
 
   @override
@@ -187,7 +192,3 @@ class ValueStream<T> implements Stream<T> {
       stream.listen(onData,
           onError: onError, onDone: onDone, cancelOnError: cancelOnError);
 }
-
-ValueStream<T> shrine<T>(Iterable<Stream> streams, T Function() getter) =>
-    ValueStream(
-        Stream.empty().mergeAll(streams).map((e) => getter()), getter());
