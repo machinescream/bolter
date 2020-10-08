@@ -1,9 +1,14 @@
-import 'dart:collection';
-
 import 'package:bolter/bolter.dart';
 
-class State {
-  final l = [];
+abstract class IState {
+  IUser get user;
+}
+
+class State implements IState {
+  @override
+  final User user;
+
+  State(this.user);
 }
 
 abstract class IUser {
@@ -12,7 +17,7 @@ abstract class IUser {
 
 class User with EquatableMixin implements IUser {
   @override
-  final int id;
+  int id;
 
   User(this.id);
 
@@ -20,19 +25,21 @@ class User with EquatableMixin implements IUser {
   List<Object> get props => [id];
 }
 
-void main() async {
-  final l1 = [User(1), User(2)];
-  final l2 = [User(1), User(2), User(3)];
-
-  final t1 = UnmodifiableListView<IUser>(l1);
-  final t2 = UnmodifiableListView<IUser>(l2);
-  print(ComparableWrapper(t1).hashCode);
-  print(ComparableWrapper(t2).hashCode);
-
-  final b = Bolter(State());
-  b.stream((state) => state.l).map((event) => event.length > 2).listen((event) {
-    print(event);
+void main() {
+  // domain layer:
+  final b = Bolter(State(User(1)));
+  b.state.user.id = 2;
+  // presentation
+  final presenter = Presenter(b);
+  presenter.bolter.stream((state) {
+    return state.user.id;
+  }).listen((event) {
+    print('new id is: $event');
   });
-  b.state.l.add(1);
   b.shake();
+}
+
+class Presenter {
+  final Bolter<IState> bolter;
+  Presenter(this.bolter);
 }

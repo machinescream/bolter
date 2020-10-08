@@ -1,4 +1,6 @@
 Simplest mutable state manager.
+![GitHub Logo](bolter.png)
+
 
 ## Usage
 
@@ -6,27 +8,48 @@ A simple usage example:
 
 ```dart
 import 'package:bolter/bolter.dart';
-import 'package:equatable/equatable.dart';
 
-// ignore: must_be_immutable
-class State extends Equatable {
-  var _value = 0;
-  int get value => _value;
-  
-  void incr() => _value++;
+abstract class IState {
+  IUser get user;
+}
+
+class State implements IState {
+  @override
+  final User user;
+
+  State(this.user);
+}
+
+abstract class IUser {
+  int get id;
+}
+
+class User with EquatableMixin implements IUser {
+  @override
+  int id;
+
+  User(this.id);
 
   @override
-  List<Object> get props => [value];
+  List<Object> get props => [id];
 }
 
 void main() {
-  final bolter = Bolter(State());
-  bolter.stream((state) => state.value).listen((event) {
-    print(event);
+  // domain layer:
+  final b = Bolter(State(User(1)));
+  b.state.user.id = 2;
+  // presentation
+  final presenter = Presenter(b);
+  presenter.bolter.stream((state) {
+    return state.user.id;
+  }).listen((event) {
+    print('new id is: $event');
   });
-  bolter.state.incr();
-  bolter.shake();
-  bolter.state.incr();
-  bolter.shake();
+  b.shake();
+}
+
+class Presenter {
+  final Bolter<IState> bolter;
+  Presenter(this.bolter);
 }
 ```
