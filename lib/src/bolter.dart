@@ -50,7 +50,7 @@ class ValueStream<T> implements Stream<T> {
 
   Stream<T> get stream => _stream.map((event) {
         final newHashCode = ComparableWrapper(event).hashCode;
-        if (newHashCode == lastKnownHashcode) {
+        if (newHashCode == lastKnownHashcode && preventSameVal) {
           return null;
         }
         lastKnownHashcode = newHashCode;
