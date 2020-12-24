@@ -14,7 +14,7 @@ class Bolter<S> {
 
   ValueStream<V> stream<V>(Mapper<V, S> mapper, {bool distinct = true}) =>
       ValueStream(_bolter.stream.map(mapper), mapper(state),
-          preventSameVal: distinct);
+          distinctValues: distinct);
 
   void shake<V>({Mapper<V, S> change}) {
     change?.call(state);
@@ -35,22 +35,22 @@ class ComparableWrapper<V> extends Equatable {
 
 class ValueStream<T> implements Stream<T> {
   final Stream<T> _stream;
-  final bool preventSameVal;
+  final bool distinctValues;
   T _lastVal;
   int lastKnownHashcode;
 
-  ValueStream(this._stream, this._lastVal, {this.preventSameVal});
+  ValueStream(this._stream, this._lastVal, {this.distinctValues = true});
 
   factory ValueStream.shrine(Iterable<Stream> streams, T Function() getter,
-      {bool distinct = true}) {
+      {bool distinctValues = true}) {
     return ValueStream(
         const Stream.empty().mergeAll(streams).map((e) => getter()), getter(),
-        preventSameVal: distinct);
+        distinctValues: distinctValues);
   }
 
   Stream<T> get stream => _stream.map((event) {
         final newHashCode = ComparableWrapper(event).hashCode;
-        if (newHashCode == lastKnownHashcode && preventSameVal) {
+        if ((newHashCode == lastKnownHashcode) && (distinctValues ?? true)) {
           return null;
         }
         lastKnownHashcode = newHashCode;
