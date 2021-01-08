@@ -11,7 +11,7 @@ class Bolter {
   ValueStream<V> stream<V>(Getter<V> getter, {bool distinct = true}) =>
       ValueStream(_bolter.stream.map((_) => getter()), getter(), distinctValues: distinct);
 
-  void shake<V>() => _bolter.sink.add(null);
+  void shake() => _bolter.sink.add(null);
 
   void dispose() => _bolter.close();
 }
