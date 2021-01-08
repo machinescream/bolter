@@ -13,6 +13,8 @@ class Bolter {
 
   void shake() => _bolter.sink.add(null);
 
+  bool get isDisposed => _bolter.isClosed;
+
   void dispose() => _bolter.close();
 }
 
