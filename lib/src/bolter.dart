@@ -26,7 +26,7 @@ class ComparableWrapper<V> extends Equatable {
   List<V> get props => [_value];
 }
 
-class ValueStream<T> implements Stream<T> {
+class ValueStream<T> extends Stream<T> {
   final Stream<T> _stream;
   final bool distinctValues;
   T _lastVal;
@@ -55,10 +55,10 @@ class ValueStream<T> implements Stream<T> {
   Future<bool> any(bool Function(T element) test) => stream.any(test);
 
   @override
-  ValueStream<T> asBroadcastStream(
+  Stream<T> asBroadcastStream(
           {void Function(StreamSubscription<T> subscription)? onListen,
           void Function(StreamSubscription<T> subscription)? onCancel}) =>
-      this;
+      super.asBroadcastStream(onListen: onListen, onCancel: onCancel);
 
   @override
   Stream<E> asyncExpand<E>(Stream<E>? Function(T event) convert) => stream.asyncExpand(convert);
