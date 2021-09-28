@@ -1,6 +1,4 @@
-Simplest mutable state manager.
-
 ![GitHub Logo](bolter.png)
+#Simple state notifier without flutter dependency;
 
 
-## Usage

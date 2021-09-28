@@ -2,12 +2,10 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:stream_transform/stream_transform.dart';
 
-typedef Getter<V> = V Function();
-
 class Bolter {
   final _bolter = StreamController<void>.broadcast();
 
-  ValueStream<V> stream<V>(Getter<V> getter, {bool distinct = true}) =>
+  ValueStream<V> stream<V>(V Function() getter, {bool distinct = true}) =>
       ValueStream(_bolter.stream.map((_) => getter()), getter(), distinctValues: distinct);
 
   void shake() => _bolter.sink.add(null);
@@ -32,9 +30,11 @@ class ValueStream<T> extends Stream<T> {
   T _lastVal;
   int lastKnownHashcode = -1;
 
-  ValueStream(this._stream, this._lastVal, {this.distinctValues = true});
+  ValueStream(this._stream, this._lastVal, {this.distinctValues = true})
+      : lastKnownHashcode = ComparableWrapper(_lastVal).hashCode;
 
-  factory ValueStream.shrine(Iterable<Stream> streams, T Function() getter, {bool distinctValues = true}) {
+  factory ValueStream.shrine(Iterable<Stream> streams, T Function() getter,
+      {bool distinctValues = true}) {
     return ValueStream(const Stream.empty().mergeAll(streams).map((e) => getter()), getter(),
         distinctValues: distinctValues);
   }
@@ -76,26 +76,30 @@ class ValueStream<T> extends Stream<T> {
   Future<E> drain<E>([E? futureValue]) => stream.drain(futureValue);
 
   @override
-  ValueStream<T> distinct([bool Function(T previous, T next)? equals]) => ValueStream(stream.distinct(equals), value);
+  ValueStream<T> distinct([bool Function(T previous, T next)? equals]) =>
+      ValueStream(stream.distinct(equals), value);
 
   @override
   ValueStream<T> handleError(Function onError, {bool Function(dynamic error)? test}) =>
       ValueStream(stream.handleError(onError, test: test), value);
 
   @override
-  ValueStream<S> map<S>(S Function(T event) convert) => ValueStream(stream.map(convert), convert(value));
+  ValueStream<S> map<S>(S Function(T event) convert) =>
+      ValueStream(stream.map(convert), convert(value));
 
   @override
   ValueStream<T> skip(int count) => ValueStream(stream.skip(count), value);
 
   @override
-  ValueStream<T> skipWhile(bool Function(T element) test) => ValueStream(stream.skipWhile(test), value);
+  ValueStream<T> skipWhile(bool Function(T element) test) =>
+      ValueStream(stream.skipWhile(test), value);
 
   @override
   ValueStream<T> take(int count) => ValueStream(stream.take(count), value);
 
   @override
-  ValueStream<T> takeWhile(bool Function(T element) test) => ValueStream(stream.takeWhile(test), value);
+  ValueStream<T> takeWhile(bool Function(T element) test) =>
+      ValueStream(stream.takeWhile(test), value);
 
   @override
   ValueStream<T> timeout(Duration timeLimit, {void Function(EventSink<T> sink)? onTimeout}) =>
@@ -111,7 +115,8 @@ class ValueStream<T> extends Stream<T> {
   }
 
   @override
-  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) => ValueStream(stream.expand(convert), value as S);
+  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
+      ValueStream(stream.expand(convert), value as S);
 
   @override
   Future<T> elementAt(int index) => stream.elementAt(index);
@@ -127,7 +132,8 @@ class ValueStream<T> extends Stream<T> {
       stream.firstWhere(test, orElse: orElse);
 
   @override
-  Future<S> fold<S>(S initialValue, S Function(S previous, T element) combine) => stream.fold(initialValue, combine);
+  Future<S> fold<S>(S initialValue, S Function(S previous, T element) combine) =>
+      stream.fold(initialValue, combine);
 
   @override
   Future forEach(void Function(T element) action) => stream.forEach(action);
@@ -145,7 +151,8 @@ class ValueStream<T> extends Stream<T> {
   Future<T> get last => stream.last;
 
   @override
-  Future<T> lastWhere(bool Function(T element) test, {T Function()? orElse}) => stream.lastWhere(test, orElse: orElse);
+  Future<T> lastWhere(bool Function(T element) test, {T Function()? orElse}) =>
+      stream.lastWhere(test, orElse: orElse);
 
   @override
   Future<int> get length => stream.length;
