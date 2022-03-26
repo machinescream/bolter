@@ -5,14 +5,23 @@ import 'package:stream_transform/stream_transform.dart';
 class Bolter {
   final _bolter = StreamController<void>.broadcast();
 
-  ValueStream<V> stream<V>(V Function() getter, {bool distinct = true}) =>
-      ValueStream(_bolter.stream.map((_) => getter()), getter, distinctValues: distinct);
+  ValueStream<V> stream<V>(V Function() getter, {bool distinct = true}) {
+    return ValueStream(_bolter.stream.map((_) {
+      return getter();
+    }), getter, distinctValues: distinct);
+  }
 
-  void shake() => _bolter.sink.add(null);
+  void shake() {
+    _bolter.sink.add(null);
+  }
 
-  bool get isDisposed => _bolter.isClosed;
+  bool get isDisposed {
+    return _bolter.isClosed;
+  }
 
-  void dispose() => _bolter.close();
+  void dispose() {
+    _bolter.close();
+  }
 }
 
 class ComparableWrapper<V> extends Equatable {
@@ -21,7 +30,9 @@ class ComparableWrapper<V> extends Equatable {
   const ComparableWrapper(this._value);
 
   @override
-  List<V> get props => [_value];
+  List<V> get props {
+    return [_value];
+  }
 }
 
 class ValueStream<T> extends Stream<T> {
@@ -48,22 +59,31 @@ class ValueStream<T> extends Stream<T> {
         return true;
       });
 
-  T get value => _lastVal();
+  T get value {
+    return _lastVal();
+  }
 
   @override
-  Future<bool> any(bool Function(T element) test) => stream.any(test);
+  Future<bool> any(bool Function(T element) test) {
+    return stream.any(test);
+  }
 
   @override
   Stream<T> asBroadcastStream(
           {void Function(StreamSubscription<T> subscription)? onListen,
-          void Function(StreamSubscription<T> subscription)? onCancel}) =>
-      super.asBroadcastStream(onListen: onListen, onCancel: onCancel);
+          void Function(StreamSubscription<T> subscription)? onCancel}) {
+    return super.asBroadcastStream(onListen: onListen, onCancel: onCancel);
+  }
 
   @override
-  Stream<E> asyncExpand<E>(Stream<E>? Function(T event) convert) => stream.asyncExpand(convert);
+  Stream<E> asyncExpand<E>(Stream<E>? Function(T event) convert) {
+    return stream.asyncExpand(convert);
+  }
 
   @override
-  Stream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) => stream.asyncMap(convert);
+  Stream<E> asyncMap<E>(FutureOr<E> Function(T event) convert) {
+    return stream.asyncMap(convert);
+  }
 
   @override
   ValueStream<R> cast<R>() {
@@ -71,111 +91,161 @@ class ValueStream<T> extends Stream<T> {
   }
 
   @override
-  Future<bool> contains(Object? needle) => stream.contains(needle);
-
-  @override
-  Future<E> drain<E>([E? futureValue]) => stream.drain(futureValue);
-
-  @override
-  ValueStream<T> distinct([bool Function(T previous, T next)? equals]) =>
-      ValueStream(stream.distinct(equals), _lastVal);
-
-  @override
-  ValueStream<T> handleError(Function onError, {bool Function(dynamic error)? test}) =>
-      ValueStream(stream.handleError(onError, test: test), _lastVal);
-
-  @override
-  ValueStream<S> map<S>(S Function(T event) convert) =>
-      ValueStream(stream.map(convert), () => convert(_lastVal()));
-
-  @override
-  ValueStream<T> skip(int count) => ValueStream(stream.skip(count), _lastVal);
-
-  @override
-  ValueStream<T> skipWhile(bool Function(T element) test) =>
-      ValueStream(stream.skipWhile(test), _lastVal);
-
-  @override
-  ValueStream<T> take(int count) => ValueStream(stream.take(count), _lastVal);
-
-  @override
-  ValueStream<T> takeWhile(bool Function(T element) test) =>
-      ValueStream(stream.takeWhile(test), _lastVal);
-
-  @override
-  ValueStream<T> timeout(Duration timeLimit, {void Function(EventSink<T> sink)? onTimeout}) =>
-      ValueStream(stream.timeout(timeLimit, onTimeout: onTimeout), _lastVal);
-
-  @override
-  ValueStream<S> transform<S>(StreamTransformer<T, S> streamTransformer) =>
-      ValueStream(stream.transform(streamTransformer), _lastVal as S Function());
-
-  @override
-  ValueStream<T> where(bool Function(T event) test) {
-    return ValueStream(stream.where(test), _lastVal);
+  Future<bool> contains(Object? needle) {
+    return stream.contains(needle);
   }
 
   @override
-  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) =>
-      ValueStream(stream.expand(convert), _lastVal as S Function());
+  Future<E> drain<E>([E? futureValue]) {
+    return stream.drain(futureValue);
+  }
 
   @override
-  Future<T> elementAt(int index) => stream.elementAt(index);
+  ValueStream<T> distinct([bool Function(T previous, T next)? equals]) {
+    return ValueStream(stream.distinct(equals), _lastVal);
+  }
 
   @override
-  Future<bool> every(bool Function(T element) test) => stream.every(test);
+  ValueStream<T> handleError(Function onError, {bool Function(dynamic error)? test}) {
+    return ValueStream(stream.handleError(onError, test: test), _lastVal);
+  }
 
   @override
-  Future<T> get first => stream.first;
+  ValueStream<S> map<S>(S Function(T event) convert) {
+    return ValueStream(stream.map(convert), () {
+      return convert(_lastVal());
+    });
+  }
 
   @override
-  Future<T> firstWhere(bool Function(T element) test, {T Function()? orElse}) =>
-      stream.firstWhere(test, orElse: orElse);
+  ValueStream<T> skip(int count) {
+    return ValueStream(stream.skip(count), _lastVal);
+  }
 
   @override
-  Future<S> fold<S>(S initialValue, S Function(S previous, T element) combine) =>
-      stream.fold(initialValue, combine);
+  ValueStream<T> skipWhile(bool Function(T element) test) {
+    return ValueStream(stream.skipWhile(test), _lastVal);
+  }
 
   @override
-  Future forEach(void Function(T element) action) => stream.forEach(action);
+  ValueStream<T> take(int count) {
+    return ValueStream(stream.take(count), _lastVal);
+  }
 
   @override
-  bool get isBroadcast => stream.isBroadcast;
+  ValueStream<T> takeWhile(bool Function(T element) test) {
+    return ValueStream(stream.takeWhile(test), _lastVal);
+  }
 
   @override
-  Future<bool> get isEmpty => stream.isEmpty;
+  ValueStream<T> timeout(Duration timeLimit, {void Function(EventSink<T> sink)? onTimeout}) {
+    return ValueStream(stream.timeout(timeLimit, onTimeout: onTimeout), _lastVal);
+  }
 
   @override
-  Future<String> join([String separator = '']) => stream.join(separator);
+  ValueStream<S> transform<S>(StreamTransformer<T, S> streamTransformer) {
+    return ValueStream(stream.transform(streamTransformer), _lastVal as S Function());
+  }
 
   @override
-  Future<T> get last => stream.last;
+  ValueStream<T> where(bool Function(T event) test) {
+    return ValueStream(stream.where(test), () => value);
+  }
 
   @override
-  Future<T> lastWhere(bool Function(T element) test, {T Function()? orElse}) =>
-      stream.lastWhere(test, orElse: orElse);
+  ValueStream<S> expand<S>(Iterable<S> Function(T element) convert) {
+    return ValueStream(stream.expand(convert), _lastVal as S Function());
+  }
 
   @override
-  Future<int> get length => stream.length;
+  Future<T> elementAt(int index) {
+    return stream.elementAt(index);
+  }
 
   @override
-  Future pipe(StreamConsumer<T> streamConsumer) => stream.pipe(streamConsumer);
+  Future<bool> every(bool Function(T element) test) {
+    return stream.every(test);
+  }
 
   @override
-  Future<T> reduce(T Function(T previous, T element) combine) => stream.reduce(combine);
+  Future<T> get first {
+    return stream.first;
+  }
 
   @override
-  Future<T> get single => stream.single;
+  Future<T> firstWhere(bool Function(T element) test, {T Function()? orElse}) {
+    return stream.firstWhere(test, orElse: orElse);
+  }
 
   @override
-  Future<T> singleWhere(bool Function(T element) test, {T Function()? orElse}) =>
-      stream.singleWhere(test, orElse: orElse);
+  Future<S> fold<S>(S initialValue, S Function(S previous, T element) combine) {
+    return stream.fold(initialValue, combine);
+  }
 
   @override
-  Future<List<T>> toList() => stream.toList();
+  Future forEach(void Function(T element) action) {
+    return stream.forEach(action);
+  }
 
   @override
-  Future<Set<T>> toSet() => stream.toSet();
+  bool get isBroadcast {
+    return stream.isBroadcast;
+  }
+
+  @override
+  Future<bool> get isEmpty {
+    return stream.isEmpty;
+  }
+
+  @override
+  Future<String> join([String separator = '']) {
+    return stream.join(separator);
+  }
+
+  @override
+  Future<T> get last {
+    return stream.last;
+  }
+
+  @override
+  Future<T> lastWhere(bool Function(T element) test, {T Function()? orElse}) {
+    return stream.lastWhere(test, orElse: orElse);
+  }
+
+  @override
+  Future<int> get length {
+    return stream.length;
+  }
+
+  @override
+  Future pipe(StreamConsumer<T> streamConsumer) {
+    return stream.pipe(streamConsumer);
+  }
+
+  @override
+  Future<T> reduce(T Function(T previous, T element) combine) {
+    return stream.reduce(combine);
+  }
+
+  @override
+  Future<T> get single {
+    return stream.single;
+  }
+
+  @override
+  Future<T> singleWhere(bool Function(T element) test, {T Function()? orElse}) {
+    return stream.singleWhere(test, orElse: orElse);
+  }
+
+  @override
+  Future<List<T>> toList() {
+    return stream.toList();
+  }
+
+  @override
+  Future<Set<T>> toSet() {
+    return stream.toSet();
+  }
 
   ValueStream<T> debounce(Duration duration){
     return ValueStream(stream.debounce(duration), _lastVal);
