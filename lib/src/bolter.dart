@@ -5,10 +5,19 @@ import 'package:stream_transform/stream_transform.dart';
 class Bolter {
   final _bolter = StreamController<void>.broadcast();
 
-  ValueStream<V> stream<V>(V Function() getter, {bool distinct = true}) {
-    return ValueStream(_bolter.stream.map((_) {
-      return getter();
-    }), getter, distinctValues: distinct);
+  ValueStream<V> stream<V>(
+    V Function() getter, {
+    bool distinct = true,
+  }) {
+    return ValueStream(
+      _bolter.stream.map(
+        (_) {
+          return getter();
+        },
+      ),
+      getter,
+      distinctValues: distinct,
+    );
   }
 
   void shake() {
@@ -41,23 +50,36 @@ class ValueStream<T> extends Stream<T> {
   T Function() _lastVal;
   int lastKnownHashcode = -1;
 
-  ValueStream(this._stream, this._lastVal, {this.distinctValues = true})
-      : lastKnownHashcode = ComparableWrapper(_lastVal()).hashCode;
+  ValueStream(
+    this._stream,
+    this._lastVal, {
+    this.distinctValues = true,
+  }) : lastKnownHashcode = ComparableWrapper(_lastVal()).hashCode;
 
-  factory ValueStream.shrine(Iterable<Stream> streams, T Function() getter,
-      {bool distinctValues = true}) {
-    return ValueStream(const Stream.empty().mergeAll(streams).map((e) => getter()), getter,
-        distinctValues: distinctValues);
+  factory ValueStream.shrine(
+    Iterable<Stream> streams,
+    T Function() getter, {
+    bool distinctValues = true,
+  }) {
+    return ValueStream(
+      const Stream.empty().mergeAll(streams).map((e) => getter()),
+      getter,
+      distinctValues: distinctValues,
+    );
   }
 
-  Stream<T> get stream => _stream.where((event) {
+  Stream<T> get stream {
+    return _stream.where(
+      (event) {
         final newHashCode = ComparableWrapper(event).hashCode;
         if ((newHashCode == lastKnownHashcode) && distinctValues) {
           return false;
         }
         lastKnownHashcode = newHashCode;
         return true;
-      });
+      },
+    );
+  }
 
   T get value {
     return _lastVal();
@@ -69,10 +91,14 @@ class ValueStream<T> extends Stream<T> {
   }
 
   @override
-  Stream<T> asBroadcastStream(
-          {void Function(StreamSubscription<T> subscription)? onListen,
-          void Function(StreamSubscription<T> subscription)? onCancel}) {
-    return super.asBroadcastStream(onListen: onListen, onCancel: onCancel);
+  Stream<T> asBroadcastStream({
+    void Function(StreamSubscription<T> subscription)? onListen,
+    void Function(StreamSubscription<T> subscription)? onCancel,
+  }) {
+    return super.asBroadcastStream(
+      onListen: onListen,
+      onCancel: onCancel,
+    );
   }
 
   @override
@@ -87,7 +113,10 @@ class ValueStream<T> extends Stream<T> {
 
   @override
   ValueStream<R> cast<R>() {
-    return ValueStream(stream.cast<R>(), _lastVal as R Function());
+    return ValueStream(
+      stream.cast<R>(),
+      _lastVal as R Function(),
+    );
   }
 
   @override
@@ -102,12 +131,18 @@ class ValueStream<T> extends Stream<T> {
 
   @override
   ValueStream<T> distinct([bool Function(T previous, T next)? equals]) {
-    return ValueStream(stream.distinct(equals), _lastVal);
+    return ValueStream(
+      stream.distinct(equals),
+      _lastVal,
+    );
   }
 
   @override
   ValueStream<T> handleError(Function onError, {bool Function(dynamic error)? test}) {
-    return ValueStream(stream.handleError(onError, test: test), _lastVal);
+    return ValueStream(
+      stream.handleError(onError, test: test),
+      _lastVal,
+    );
   }
 
   @override
@@ -247,13 +282,18 @@ class ValueStream<T> extends Stream<T> {
     return stream.toSet();
   }
 
-  ValueStream<T> debounce(Duration duration){
+  ValueStream<T> debounce(Duration duration) {
     return ValueStream(stream.debounce(duration), _lastVal);
   }
 
   @override
   StreamSubscription<T> listen(void Function(T event)? onData,
       {Function? onError, void Function()? onDone, bool? cancelOnError}) {
-    return stream.listen(onData, onError: onError, onDone: onDone, cancelOnError: cancelOnError);
+    return stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
   }
 }
