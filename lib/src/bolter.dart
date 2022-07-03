@@ -1,7 +1,153 @@
 import 'dart:async';
+import 'package:bolter/bolter.dart';
 import 'package:equatable/equatable.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+var kProfileBolterPerformanceLogging = false;
+BolterInterface defaultBolter = _SyncBolter();
+
+typedef BolterNotification = void Function();
+typedef Getter<T> = T Function();
+
+abstract class BolterInterface {
+  void listen<T>(Getter<T> getter, BolterNotification notification);
+
+  void shake();
+
+  void stopListen(void Function() notification);
+
+  void clear();
+
+  FutureOr<void> runAndUpdate<T>({
+    void Function()? beforeAction,
+    required FutureOr<T> Function()? action,
+    void Function()? afterAction,
+    void Function(Object e)? onError,
+    BolterNotification? exactNotification,
+  });
+}
+
+class _SyncBolter implements BolterInterface {
+  final _listeners = <BolterNotification>[];
+  final _gettersCache = <BolterNotification, Getter>{};
+  final _hashCache = <BolterNotification, int>{};
+
+  @override
+  void listen<T>(Getter<T> getter, BolterNotification notification) {
+    _listeners.add(notification);
+    _gettersCache[notification] = getter;
+    _hashCache[notification] = ComparableWrapper(getter()).hashCode;
+    if (kProfileBolterPerformanceLogging) {
+      print('After adding new listener');
+      print('listeners count: ${_listeners.length}');
+      print('gettersCache count: ${_gettersCache.length}');
+      print('hashCache count: ${_hashCache.length}');
+    }
+  }
+
+  @override
+  void shake() {
+    if (kProfileBolterPerformanceLogging) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      _shakeAll();
+      print('All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
+    } else {
+      _shakeAll();
+    }
+  }
+
+  void _notify(BolterNotification listener) {
+    final newHashCode = ComparableWrapper(_gettersCache[listener]!.call()).hashCode;
+    if (newHashCode != _hashCache[listener]) {
+      listener();
+      _hashCache[listener] = newHashCode;
+    }
+  }
+
+  void _shakeExactListener(BolterNotification listener, bool shakingAll) {
+    if (!shakingAll && kProfileBolterPerformanceLogging) {
+      final now = DateTime.now().millisecondsSinceEpoch;
+      _notify(listener);
+      print('Exact notification took ${DateTime.now().millisecondsSinceEpoch - now} '
+          'milliseconds');
+    } else {
+      _notify(listener);
+    }
+  }
+
+  void _shakeAll() {
+    for (final listener in _listeners) {
+      _shakeExactListener(listener, true);
+    }
+  }
+
+  @override
+  FutureOr<void> runAndUpdate<T>({
+    void Function()? beforeAction,
+    required FutureOr<T> Function()? action,
+    void Function()? afterAction,
+    void Function(Object e)? onError,
+    BolterNotification? exactNotification,
+  }) {
+    var shakeAction =
+        exactNotification == null ? shake : () => _shakeExactListener(exactNotification, false);
+
+    if (beforeAction != null) {
+      beforeAction();
+      shakeAction();
+    }
+    if (action != null) {
+      try {
+        final actionToCheck = action();
+        if (actionToCheck is Future<T>) {
+          return actionToCheck.then((_) {
+            shakeAction();
+          });
+        } else {
+          shakeAction();
+        }
+      } catch (e) {
+        if (onError != null) {
+          onError(e);
+          shakeAction();
+        }
+        rethrow;
+      }
+    }
+    if (afterAction != null) {
+      afterAction();
+      shakeAction();
+    }
+  }
+
+  @override
+  void stopListen(void Function() notification) {
+    final status = _listeners.remove(notification);
+    final removedGetter = _gettersCache.remove(notification);
+    final removedHash = _hashCache.remove(notification);
+    if (kProfileBolterPerformanceLogging) {
+      print('After removing existing listener');
+      print('listeners count: ${_listeners.length}');
+      print('gettersCache count: ${_gettersCache.length}');
+      print('_hashCache count: ${_hashCache.length}');
+    }
+    if (!status || removedGetter == null || removedHash == null) {
+      throw Exception('no listener in listeners, or getter in cache');
+    }
+  }
+
+  @override
+  void clear() {
+    if (kProfileBolterPerformanceLogging) {
+      print('bolter cleared');
+    }
+    _listeners.clear();
+    _gettersCache.clear();
+    _hashCache.clear();
+  }
+}
+
+@Deprecated('use defaultBolter instead')
 class Bolter {
   final _bolter = StreamController<void>.broadcast();
 
@@ -39,11 +185,10 @@ class ComparableWrapper<V> extends Equatable {
   const ComparableWrapper(this._value);
 
   @override
-  List<V> get props {
-    return [_value];
-  }
+  List<V> get props => [_value];
 }
 
+@Deprecated('listen by callback by passing addListener to defaultBolter')
 class ValueStream<T> extends Stream<T> {
   final Stream<T> _stream;
   final bool distinctValues;

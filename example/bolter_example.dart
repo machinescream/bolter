@@ -11,4 +11,19 @@ Future<void> main() async {
     b.shake();
     t += 5;
   }
+
+  final sb = defaultBolter;
+
+  var st = 5;
+
+  sb.listen(() => st, (){
+    print("sync: $st");
+  });
+
+  for (var p = 0; p < 5; p++) {
+    await Future.delayed(const Duration(seconds: 1));
+    sb.shake();
+    st += 5;
+  }
+
 }
