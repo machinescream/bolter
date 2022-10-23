@@ -1,15 +1,16 @@
 name: bolter
-version: 3.1.1
-description: Simplest mutable state manager powered by dart streams and it's extensions
+version: 3.2.0
+description: Simplest mutable state manager, listen what ever u want, and run your state mutators
+  in defaultBolter.runAndUpdate method
 homepage: https://github.com/Renesanse/bolter
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
 
 dependencies:
-  equatable: ^2.0.3
-  stream_transform: ^2.0.0
+  equatable: ^2.0.5
+  stream_transform: ^2.0.1
 
 dev_dependencies:
-  lints: ^2.0.0
-  test: ^1.21.3
+  lint: ^1.10.0
+  test: ^1.21.6

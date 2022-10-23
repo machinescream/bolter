@@ -1,29 +1,21 @@
 import 'package:bolter/bolter.dart';
 
 Future<void> main() async {
-  final b = Bolter();
-  var t = 5;
-  b.stream(() => t).listen((event) {
-    print(event);
+  final k = K();
+  defaultBolter.listen(() => k.v, () {
+    print(k.v);
   });
-  for (var p = 0; p < 5; p++) {
-    await Future.delayed(const Duration(seconds: 1));
-    b.shake();
-    t += 5;
+  defaultBolter.runAndUpdate(
+    action: () {
+      return k.v = 20;
+    },
+  );
+}
+
+class K {
+  int v = 0;
+
+  void l() {
+    print(v);
   }
-
-  final sb = defaultBolter;
-
-  var st = 5;
-
-  sb.listen(() => st, (){
-    print("sync: $st");
-  });
-
-  for (var p = 0; p < 5; p++) {
-    await Future.delayed(const Duration(seconds: 1));
-    sb.shake();
-    st += 5;
-  }
-
 }
