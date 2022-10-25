@@ -6,5 +6,5 @@ linter:
     avoid_print: false
   # avoid_classes_with_only_static_members: false
   # sort_constructors_first: true
-  # prefer_double_quotes: true
   # prefer_single_quotes: true
+  # prefer_double_quotes: true
