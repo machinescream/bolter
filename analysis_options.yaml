@@ -1,7 +1,6 @@
 include: package:lint/analysis_options.yaml
 analyzer:
   exclude:
-  #- '**.freezed.dart'
 linter:
   rules:
     avoid_print: false
