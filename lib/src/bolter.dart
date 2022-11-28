@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:bolter/bolter.dart';
 import 'package:equatable/equatable.dart';
 
 bool kProfileBolterPerformanceLogging = false;
@@ -19,7 +18,7 @@ abstract class BolterInterface {
 
   FutureOr<void> runAndUpdate<T>({
     void Function()? beforeAction,
-    FutureOr<T> Function()? action,
+    required FutureOr<T> Function()? action,
     void Function()? afterAction,
     void Function(Object e)? onError,
     BolterNotification? exactNotification,
@@ -43,8 +42,7 @@ class _SyncBolter implements BolterInterface {
     if (kProfileBolterPerformanceLogging) {
       final now = DateTime.now().millisecondsSinceEpoch;
       _shakeAll();
-      print(
-          'All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
+      print('All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
       return;
     }
     _shakeAll();
@@ -67,13 +65,12 @@ class _SyncBolter implements BolterInterface {
   @override
   FutureOr<void> runAndUpdate<T>({
     void Function()? beforeAction,
-    FutureOr<T> Function()? action,
+    required FutureOr<T> Function()? action,
     void Function()? afterAction,
     void Function(Object e)? onError,
     BolterNotification? exactNotification,
   }) {
-    final shakeAction =
-        exactNotification == null ? shake : () => _notify(exactNotification);
+    final shakeAction = exactNotification == null ? shake : () => _notify(exactNotification);
 
     if (beforeAction != null) {
       beforeAction();
@@ -97,21 +94,20 @@ class _SyncBolter implements BolterInterface {
 
     if (action != null) {
       if (action is Future<T> Function()) {
-        return action().then(
-          (_) {
-            shakeAction();
-            after();
-          },
-          onError: error,
-        );
+        return action()
+            .then(
+              (_) => shakeAction(),
+              onError: error,
+            )
+            .whenComplete(after);
       } else {
         try {
           action();
           shakeAction();
-          after();
         } catch (e) {
           error(e);
         }
+        after();
       }
     }
   }
