@@ -31,7 +31,7 @@ bolter.clear();
 
 ## Performance
 
-The performance of the `_SyncBolter` class is generally acceptable for a moderate number of listeners. The code caches the hash code of the result of calling the `Getter` functions, which helps to avoid unnecessary calls and improve performance. However, if the number of listeners becomes very large, or the `Getter` functions are expensive to compute, the performance may become an issue and additional optimizations may be necessary. The code includes a `kProfileBolterPerformanceLogging` flag, which can be used to log the time taken for notifying all listeners and assist with profiling the performance of the code.
+The performance of the `Bolter` class is generally acceptable for a moderate number of listeners. The code caches the hash code of the result of calling the `Getter` functions, which helps to avoid unnecessary calls and improve performance. However, if the number of listeners becomes very large, or the `Getter` functions are expensive to compute, the performance may become an issue and additional optimizations may be necessary. The code includes a `kProfileBolterPerformanceLogging` flag, which can be used to log the time taken for notifying all listeners and assist with profiling the performance of the code.
 
 ## Contributing
 
