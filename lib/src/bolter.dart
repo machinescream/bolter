@@ -29,12 +29,14 @@ class Bolter implements BolterInterface {
   final _listeners = <BolterNotification, Getter>{};
   final _hashCache = <BolterNotification, int>{};
 
+  /// Registers a [getter] and a [notification] to be notified when the result of calling the getter changes
   @override
   void listen<T>(Getter<T> getter, BolterNotification notification) {
     _listeners[notification] = getter;
     _hashCache[notification] = ComparableWrapper(getter()).hashCode;
   }
 
+  /// Notifies all registered listeners of changes
   @override
   void shake() {
     if (kProfileBolterPerformanceLogging) {
@@ -58,6 +60,7 @@ class Bolter implements BolterInterface {
     _listeners.forEach((listener, _) => _notifyListener(listener));
   }
 
+  /// Runs an [action] and notifies the relevant listeners of any changes that occur
   @override
   FutureOr<void> runAndUpdate<T>({
     void Function()? beforeAction,
@@ -109,6 +112,7 @@ class Bolter implements BolterInterface {
     }
   }
 
+  /// Removes a listener from the registered listeners.
   @override
   void stopListen(void Function() notification) {
     final removedGetter = _listeners.remove(notification);
@@ -118,6 +122,7 @@ class Bolter implements BolterInterface {
     }
   }
 
+  /// Clears all registered listeners.
   @override
   void clear() {
     _listeners.clear();
