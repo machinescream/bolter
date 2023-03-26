@@ -81,6 +81,7 @@ class _SyncBolter implements BolterInterface {
       if (onError != null) {
         onError(e);
         shakeAction();
+      } else {
         throw e;
       }
     }

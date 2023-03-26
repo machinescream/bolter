@@ -1,5 +1,5 @@
 name: bolter
-version: 3.2.1
+version: 3.2.4
 description: Simplest mutable state manager, listen what ever u want, and run your state mutators
   in defaultBolter.runAndUpdate method
 homepage: https://github.com/Renesanse/bolter
