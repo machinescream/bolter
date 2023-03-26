@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 
 bool kProfileBolterPerformanceLogging = false;
-BolterInterface defaultBolter = _SyncBolter();
+BolterInterface defaultBolter = Bolter();
 
 typedef BolterNotification = void Function();
 typedef Getter<T> = T Function();
@@ -25,15 +25,13 @@ abstract class BolterInterface {
   });
 }
 
-class _SyncBolter implements BolterInterface {
-  final _listeners = <BolterNotification>[];
-  final _getters = <BolterNotification, Getter>{};
+class Bolter implements BolterInterface {
+  final _listeners = <BolterNotification, Getter>{};
   final _hashCache = <BolterNotification, int>{};
 
   @override
   void listen<T>(Getter<T> getter, BolterNotification notification) {
-    _listeners.add(notification);
-    _getters[notification] = getter;
+    _listeners[notification] = getter;
     _hashCache[notification] = ComparableWrapper(getter()).hashCode;
   }
 
@@ -41,25 +39,23 @@ class _SyncBolter implements BolterInterface {
   void shake() {
     if (kProfileBolterPerformanceLogging) {
       final now = DateTime.now().millisecondsSinceEpoch;
-      _shakeAll();
+      _notifyAllListeners();
       print('All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
       return;
     }
-    _shakeAll();
+    _notifyAllListeners();
   }
 
-  void _notify(BolterNotification listener) {
-    final newHashCode = ComparableWrapper(_getters[listener]!.call()).hashCode;
+  void _notifyListener(BolterNotification listener) {
+    final newHashCode = ComparableWrapper(_listeners[listener]!.call()).hashCode;
     if (newHashCode != _hashCache[listener]) {
       listener();
       _hashCache[listener] = newHashCode;
     }
   }
 
-  void _shakeAll() {
-    for (final listener in _listeners) {
-      _notify(listener);
-    }
+  void _notifyAllListeners() {
+    _listeners.forEach((listener, _) => _notifyListener(listener));
   }
 
   @override
@@ -70,7 +66,7 @@ class _SyncBolter implements BolterInterface {
     void Function(Object e)? onError,
     BolterNotification? exactNotification,
   }) {
-    final shakeAction = exactNotification == null ? shake : () => _notify(exactNotification);
+    final shakeAction = exactNotification == null ? shake : () => _notifyListener(exactNotification);
 
     if (beforeAction != null) {
       beforeAction();
@@ -115,10 +111,9 @@ class _SyncBolter implements BolterInterface {
 
   @override
   void stopListen(void Function() notification) {
-    final status = _listeners.remove(notification);
-    final removedGetter = _getters.remove(notification);
+    final removedGetter = _listeners.remove(notification);
     final removedHash = _hashCache.remove(notification);
-    if (!status || removedGetter == null || removedHash == null) {
+    if (removedGetter == null || removedHash == null) {
       throw Exception('no listener in listeners, or getter in cache');
     }
   }
@@ -126,7 +121,6 @@ class _SyncBolter implements BolterInterface {
   @override
   void clear() {
     _listeners.clear();
-    _getters.clear();
     _hashCache.clear();
   }
 }

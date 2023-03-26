@@ -14,8 +14,4 @@ Future<void> main() async {
 
 class K {
   int v = 0;
-
-  void l() {
-    print(v);
-  }
 }
