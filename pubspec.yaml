@@ -5,7 +5,7 @@ description: Simplest mutable state manager, listen what ever u want, and run yo
 homepage: https://github.com/Renesanse/bolter
 
 environment:
-  sdk: '>=2.12.0 <3.0.0'
+  sdk: '>=2.12.0 <4.0.0'
 
 dependencies:
   equatable: ^2.0.5
