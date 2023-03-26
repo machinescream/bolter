@@ -1,6 +1,5 @@
 # Bolter
-
-This repository a listener-notification mechanism for monitoring changes in values.
+Are you tired of complex state management solutions for your Flutter applications? Introducing Bolter, a simple yet powerful state management solution that streamlines your app's performance and improves code readability. In this video, we'll walk you through the Bolter state manager and show you how it can transform the way you build your Flutter apps. Say goodbye to the headaches of traditional state management and welcome a new era of simplicity and efficiency!
 
 ## Features
 
