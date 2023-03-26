@@ -1,5 +1,6 @@
-## [3.2.0] - 23 oct 2022
+## [3.2.4] - 26 mar 2023
 
+*3.2.4 onError fix
 *3.2.0 legacy remove
 *3.1.0 sync bolter, profiling, runAndUpdate
 *1.0.7 distinct flag in bolter stream

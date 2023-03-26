@@ -1,4 +1,3 @@
-![GitHub Logo](bolter.png)
-#Simple state notifier without flutter dependency;
+Simple state notifier without flutter dependency;
 
 
