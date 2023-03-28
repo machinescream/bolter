@@ -13,15 +13,15 @@ To use the `Bolter`, you need to create an instance of the `Bolter` class and ca
 final bolter = Bolter();
 
 bolter.listen(
-() => myValue,
-() => print('Value has changed!'),
+  () => myValue,
+  () => print('Value has changed!'),
 );
 
 bolter.shake();
 
 bolter.runAndUpdate(
-action: () => doSomething(),
-afterAction: () => print('Action is complete!'),
+  action: () => doSomething(),
+  afterAction: () => print('Action is complete!'),
 );
 
 bolter.stopListen(() => print('Value has changed!'));
