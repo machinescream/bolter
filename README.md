@@ -8,20 +8,18 @@ Are you tired of complex state management solutions for your Flutter application
 - Optionally notify listeners either globally or for a specific `BolterNotification` based on whether an `exactNotification` was provided.
 ## Usage
 
-To use the `Bolter`, you need to create an instance of the `Bolter` class and call its methods as needed.
+To use the `Bolter`, you need to create an instance of the `Bolter` class or you can use `defaultBolter` and call its methods as needed.
 ```dart
 final bolter = Bolter();
 
 bolter.listen(
-() => myValue,
-() => print('Value has changed!'),
+  () => myValue,
+  () => print('Value has changed!'),
 );
 
-bolter.shake();
-
 bolter.runAndUpdate(
-action: () => doSomething(),
-afterAction: () => print('Action is complete!'),
+  action: () => doSomething(),
+  afterAction: () => print('Action is complete!'),
 );
 
 bolter.stopListen(() => print('Value has changed!'));

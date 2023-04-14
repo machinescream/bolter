@@ -1,4 +1,6 @@
-## [3.2.5] - 26 mar 2023
+## [3.2.7] - 26 mar 2023
+*3.2.7 readme update
+*3.2.6 readme update
 *3.2.5 readme update
 *3.2.4 onError fix
 *3.2.0 legacy remove
