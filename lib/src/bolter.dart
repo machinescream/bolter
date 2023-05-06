@@ -24,7 +24,7 @@ abstract interface class BolterInterface {
   });
 }
 
-class Bolter implements BolterInterface {
+final class Bolter implements BolterInterface {
   final _listeners = <BolterNotification, Getter>{};
   final _hashCache = <BolterNotification, int>{};
 
