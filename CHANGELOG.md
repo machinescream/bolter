@@ -1,5 +1,6 @@
-## [3.2.7] - 26 mar 2023
-*3.2.7 readme update
+## [3.3.0] - 6 may 2023
+*3.3.0 dart 3.0 update
+*3.2.9 readme update
 *3.2.6 readme update
 *3.2.5 readme update
 *3.2.4 onError fix

@@ -3,10 +3,6 @@ import 'dart:async';
 import 'package:bolter/bolter.dart';
 
 void main() {
-  counter();
-}
-
-void counter() {
   int v = 0;
   defaultBolter.listen(() => v, () {
     print(v);

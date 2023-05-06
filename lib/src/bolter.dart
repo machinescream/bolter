@@ -7,12 +7,12 @@ BolterInterface defaultBolter = Bolter();
 typedef BolterNotification = void Function();
 typedef Getter<T> = T Function();
 
-abstract class BolterInterface {
+abstract interface class BolterInterface {
   void listen<T>(Getter<T> getter, BolterNotification notification);
 
   void shake();
 
-  void stopListen(void Function() notification);
+  void stopListen(BolterNotification notification);
 
   void clear();
 
@@ -21,7 +21,6 @@ abstract class BolterInterface {
     required FutureOr<T> Function()? action,
     void Function()? afterAction,
     void Function(Object e)? onError,
-    BolterNotification? exactNotification,
   });
 }
 
@@ -41,23 +40,22 @@ class Bolter implements BolterInterface {
   void shake() {
     if (kProfileBolterPerformanceLogging) {
       final now = DateTime.now().millisecondsSinceEpoch;
-      _notifyAllListeners();
-      print('All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
+      _notifyListeners();
+      print(
+          'All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
       return;
     }
-    _notifyAllListeners();
+    _notifyListeners();
   }
 
-  void _notifyListener(BolterNotification listener) {
-    final newHashCode = ComparableWrapper(_listeners[listener]!.call()).hashCode;
-    if (newHashCode != _hashCache[listener]) {
-      listener();
-      _hashCache[listener] = newHashCode;
-    }
-  }
-
-  void _notifyAllListeners() {
-    _listeners.forEach((listener, _) => _notifyListener(listener));
+  void _notifyListeners() {
+    _listeners.forEach((listener, _) {
+      final hash = ComparableWrapper(_listeners[listener]!.call()).hashCode;
+      if (hash != _hashCache[listener]) {
+        listener();
+        _hashCache[listener] = hash;
+      }
+    });
   }
 
   /// Runs an [action] and notifies the relevant listeners of any changes that occur
@@ -67,54 +65,44 @@ class Bolter implements BolterInterface {
     required FutureOr<T> Function()? action,
     void Function()? afterAction,
     void Function(Object e)? onError,
-    BolterNotification? exactNotification,
   }) {
-    final shakeAction = exactNotification == null ? shake : () => _notifyListener(exactNotification);
-
     if (beforeAction != null) {
       beforeAction();
-      shakeAction();
+      shake();
     }
 
-    void error(Object e) {
-      if (onError != null) {
-        onError(e);
-        shakeAction();
-      } else {
-        throw e;
-      }
+    void handleError(Object e) {
+      if (onError == null) throw e;
+      onError(e);
+      shake();
     }
 
     void after() {
       if (afterAction != null) {
         afterAction();
-        shakeAction();
+        shake();
       }
     }
 
-    if (action != null) {
-      if (action is Future<T> Function()) {
-        return action()
-            .then(
-              (_) => shakeAction(),
-              onError: error,
-            )
-            .whenComplete(after);
-      } else {
-        try {
-          action();
-          shakeAction();
-        } catch (e) {
-          error(e);
-        }
-        after();
+    if (action == null) return null;
+    if (action is Future<T> Function()) {
+      return action()
+          .then((_) => shake(), onError: handleError)
+          .whenComplete(after);
+    } else {
+      try {
+        action();
+        shake();
+      } catch (e) {
+        handleError(e);
       }
+      after();
     }
   }
 
   /// Removes a listener from the registered listeners.
   @override
-  void stopListen(void Function() notification) {
+  void stopListen(BolterNotification notification) {
     final removedGetter = _listeners.remove(notification);
     final removedHash = _hashCache.remove(notification);
     if (removedGetter == null || removedHash == null) {
@@ -130,7 +118,7 @@ class Bolter implements BolterInterface {
   }
 }
 
-class ComparableWrapper<V> extends Equatable {
+final class ComparableWrapper<V> extends Equatable {
   final V _value;
 
   const ComparableWrapper(this._value);

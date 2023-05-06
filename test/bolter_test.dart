@@ -54,7 +54,8 @@ void main() {
       int count = 0;
       final getter = () => count;
       final listener = () => count++;
-      final action = () async => await Future.delayed(Duration(milliseconds: 100), () => count++);
+      final action = () async =>
+          await Future.delayed(Duration(milliseconds: 100), () => count++);
 
       bolter.listen(getter, listener);
       await bolter.runAndUpdate(action: action);
@@ -63,4 +64,3 @@ void main() {
     });
   });
 }
-
