@@ -2,29 +2,12 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 
 bool kProfileBolterPerformanceLogging = false;
-BolterInterface defaultBolter = Bolter();
+final defaultBolter = Bolter();
 
 typedef BolterNotification = void Function();
 typedef Getter<T> = T Function();
 
-abstract interface class BolterInterface {
-  void listen<T>(Getter<T> getter, BolterNotification notification);
-
-  void shake();
-
-  void stopListen(BolterNotification notification);
-
-  void clear();
-
-  FutureOr<void> runAndUpdate<T>({
-    void Function()? beforeAction,
-    required FutureOr<T> Function()? action,
-    void Function()? afterAction,
-    void Function(Object e)? onError,
-  });
-}
-
-final class Bolter implements BolterInterface {
+class Bolter {
   final _listeners = <BolterNotification, Getter>{};
   final _hashCache = <BolterNotification, int>{};
 
@@ -48,16 +31,6 @@ final class Bolter implements BolterInterface {
     _notifyListeners();
   }
 
-  void _notifyListeners() {
-    _listeners.forEach((listener, _) {
-      final hash = ComparableWrapper(_listeners[listener]!.call()).hashCode;
-      if (hash != _hashCache[listener]) {
-        listener();
-        _hashCache[listener] = hash;
-      }
-    });
-  }
-
   /// Runs an [action] and notifies the relevant listeners of any changes that occur
   @override
   FutureOr<void> runAndUpdate<T>({
@@ -71,12 +44,6 @@ final class Bolter implements BolterInterface {
       shake();
     }
 
-    void handleError(Object e) {
-      if (onError == null) throw e;
-      onError(e);
-      shake();
-    }
-
     void after() {
       if (afterAction != null) {
         afterAction();
@@ -85,6 +52,12 @@ final class Bolter implements BolterInterface {
     }
 
     if (action == null) return null;
+    void handleError(Object e) {
+      if (onError == null) throw e;
+      onError(e);
+      shake();
+    }
+
     if (action is Future<T> Function()) {
       return action()
           .then((_) => shake(), onError: handleError)
@@ -116,9 +89,19 @@ final class Bolter implements BolterInterface {
     _listeners.clear();
     _hashCache.clear();
   }
+
+  void _notifyListeners() {
+    _listeners.forEach((listener, _) {
+      final hash = ComparableWrapper(_listeners[listener]!.call()).hashCode;
+      if (hash != _hashCache[listener]) {
+        listener();
+        _hashCache[listener] = hash;
+      }
+    });
+  }
 }
 
-final class ComparableWrapper<V> extends Equatable {
+class ComparableWrapper<V> extends Equatable {
   final V _value;
 
   const ComparableWrapper(this._value);

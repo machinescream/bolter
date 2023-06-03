@@ -1,12 +1,14 @@
 name: bolter
-version: 3.3.0
+version: 3.5.0
 description: A simple yet powerful state management solution
 homepage: https://github.com/Renesanse/bolter
 
 environment:
-  sdk: '>=3.0.0 <4.0.0'
+  sdk: '>=2.17.0 <4.0.0'
 
 dependencies:
+  flutter:
+    sdk: flutter
   equatable: ^2.0.5
 
 dev_dependencies:
