@@ -1,11 +1,12 @@
-part of '../bolter_provider.dart';
+part of '../widgets/bolter_provider.dart';
 
 /// [Presenter] is an abstract class that provides a base for implementing custom presenter classes.
 /// It includes methods for managing state, performing actions, and handling the lifecycle of the presenter.
 abstract class Presenter<P extends Presenter<P>> {
-  late final BolterInterface _bolter = _context.bolter;
-  late BuildContext _context;
   late final itSelf = this as P;
+
+  late final _bolter = _context.bolter;
+  late BuildContext _context;
 
   /// Returns the current [BuildContext] for the presenter.
   BuildContext get context => _context;

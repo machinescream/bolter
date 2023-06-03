@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'bolter_core.dart';
+import 'package:bolter/src/bolter_core.dart';
 
-part 'presenter/presenter.dart';
-part 'presenter/presenter_provider.dart';
+part '../presenter/presenter.dart';
+part '../presenter/presenter_provider.dart';
 part 'bolter_builder.dart';
 
 class BolterProvider extends InheritedWidget {
-  final BolterInterface _bolter;
+  final Bolter _bolter;
 
   const BolterProvider(
     this._bolter, {
@@ -20,7 +20,7 @@ class BolterProvider extends InheritedWidget {
 }
 
 extension BolterExtension on BuildContext {
-  BolterInterface get bolter =>
+  Bolter get bolter =>
       dependOnInheritedWidgetOfExactType<BolterProvider>()?._bolter ??
       defaultBolter;
 }

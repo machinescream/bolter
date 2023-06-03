@@ -1,5 +1,5 @@
-## [3.5.0] - 2 jun 2023
-*3.4.0 flutter support
+## [3.5.0] - 3 jun 2023
+*3.5.0 flutter support
 *3.4.0 unification
 *3.3.0 dart 3.0 update
 *3.2.9 readme update

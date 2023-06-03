@@ -1,4 +1,4 @@
-part of '../bolter_provider.dart';
+part of '../widgets/bolter_provider.dart';
 
 class PresenterProvider<P extends Presenter<P>> extends InheritedWidget {
   final P presenter;

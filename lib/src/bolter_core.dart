@@ -12,14 +12,12 @@ class Bolter {
   final _hashCache = <BolterNotification, int>{};
 
   /// Registers a [getter] and a [notification] to be notified when the result of calling the getter changes
-  @override
   void listen<T>(Getter<T> getter, BolterNotification notification) {
     _listeners[notification] = getter;
     _hashCache[notification] = ComparableWrapper(getter()).hashCode;
   }
 
   /// Notifies all registered listeners of changes
-  @override
   void shake() {
     if (kProfileBolterPerformanceLogging) {
       final now = DateTime.now().millisecondsSinceEpoch;
@@ -32,7 +30,6 @@ class Bolter {
   }
 
   /// Runs an [action] and notifies the relevant listeners of any changes that occur
-  @override
   FutureOr<void> runAndUpdate<T>({
     void Function()? beforeAction,
     required FutureOr<T> Function()? action,
@@ -74,7 +71,6 @@ class Bolter {
   }
 
   /// Removes a listener from the registered listeners.
-  @override
   void stopListen(BolterNotification notification) {
     final removedGetter = _listeners.remove(notification);
     final removedHash = _hashCache.remove(notification);
@@ -84,7 +80,6 @@ class Bolter {
   }
 
   /// Clears all registered listeners.
-  @override
   void clear() {
     _listeners.clear();
     _hashCache.clear();

@@ -1,3 +1,3 @@
 library bolter;
 
-export 'src/bolter_provider.dart';
+export 'src/widgets/bolter_provider.dart';
