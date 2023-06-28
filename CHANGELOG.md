@@ -1,13 +1,14 @@
 # Changelog
-*3.5.0 refactor
-*3.4.0 flutter support
-*3.3.0 dart 3.0 update
-*3.2.9 readme update
-*3.2.6 readme update
-*3.2.5 readme update
-*3.2.4 onError fix
-*3.2.0 legacy remove
-*3.1.0 sync bolter, profiling, runAndUpdate
-*1.0.7 distinct flag in bolter stream
-*0.0.4 edited shake method
-*0.0.1 initial version
+
+- **3.5.0** - Refactoring of codebase
+- **3.4.0** - Added Flutter support
+- **3.3.0** - Updated to Dart 3.0
+- **3.2.9** - README update
+- **3.2.6** - README update
+- **3.2.5** - README update
+- **3.2.4** - Fixed `onError` issue
+- **3.2.0** - Removed legacy code
+- **3.1.0** - Synced Bolter, added profiling, introduced `runAndUpdate`
+- **1.0.7** - Added distinct flag in Bolter stream
+- **0.0.4** - Edited shake method
+- **0.0.1** - Initial version
