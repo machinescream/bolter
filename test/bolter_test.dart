@@ -58,7 +58,7 @@ void main() {
           await Future.delayed(Duration(milliseconds: 100), () => count++);
 
       bolter.listen(getter, listener);
-      await bolter.runAndUpdate(action: action);
+      await bolter.perform(action: action);
 
       expect(count, 2);
     });

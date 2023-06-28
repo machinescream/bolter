@@ -1,4 +1,4 @@
-part of '../widgets/bolter_provider.dart';
+part of bolter;
 
 /// [Presenter] is an abstract class that provides a base for implementing custom presenter classes.
 /// It includes methods for managing state, performing actions, and handling the lifecycle of the presenter.
@@ -24,7 +24,6 @@ abstract class Presenter<P extends Presenter<P>> {
   /// Called when the presenter is being disposed.
   /// This method should be overridden to release any resources held by the presenter.
   @protected
-  @mustCallSuper
   void dispose() {}
 
   /// Runs the given [action] and updates the state of the presenter.
@@ -38,7 +37,7 @@ abstract class Presenter<P extends Presenter<P>> {
     void Function()? afterAction,
     void Function(Object e)? onError,
   }) {
-    return _bolter.runAndUpdate(
+    return _bolter.perform(
       beforeAction: beforeAction,
       action: action,
       afterAction: afterAction,

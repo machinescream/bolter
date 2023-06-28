@@ -1,7 +1,7 @@
 name: bolter
-version: 3.4.0
-description: A simple yet powerful state management solution
-homepage: https://github.com/Renesanse/bolter
+version: 3.5.0
+description: Most simple and stable ui update instument
+homepage: https://github.com/machinescream/bolter
 
 environment:
   sdk: '>=2.17.0 <4.0.0'

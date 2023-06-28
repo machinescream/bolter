@@ -1,4 +1,4 @@
-part of 'bolter_provider.dart';
+part of bolter;
 
 class BolterBuilder<T> extends StatefulWidget {
   final T Function() getter;
@@ -16,6 +16,8 @@ class BolterBuilder<T> extends StatefulWidget {
 
 class _BolterBuilderState<T> extends State<BolterBuilder<T>> {
   late final _bolter = context.bolter;
+
+  Getter get _getter => widget.getter;
 
   @override
   void initState() {
@@ -50,6 +52,4 @@ class _BolterBuilderState<T> extends State<BolterBuilder<T>> {
   void _notification() {
     setState(() {});
   }
-
-  Getter get _getter => widget.getter;
 }

@@ -1,4 +1,4 @@
-part of '../widgets/bolter_provider.dart';
+part of bolter;
 
 class PresenterProvider<P extends Presenter<P>> extends InheritedWidget {
   final P presenter;
@@ -65,7 +65,7 @@ class _PresenterProviderWidgetState<P extends Presenter<P>>
   void _initializePresenter() {
     presenter._context = context;
     WidgetsBinding.instance.addPostFrameCallback(
-          (_) {
+      (_) {
         if (mounted) {
           presenter.onLayout();
         }

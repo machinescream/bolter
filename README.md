@@ -20,13 +20,13 @@ Jump into Bolter with these simple steps::
 
 ```yaml
 dependencies:
-  bolter_flutter:
+  bolter:
 ```
 
-2. Import the `bolter_flutter` package in your Dart files:
+2. Import the `bolter` package in your Dart files:
 
 ```dart
-import 'package:bolter_flutter/bolter_flutter.dart';
+import 'package:bolter/bolter.dart';
 ```
 
 3. Define your custom presenter classes that extend `Presenter`:

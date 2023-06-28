@@ -23,50 +23,36 @@ class Bolter {
       final now = DateTime.now().millisecondsSinceEpoch;
       _notifyListeners();
       print(
-          'All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds');
+        "All notifications took ${DateTime.now().millisecondsSinceEpoch - now} milliseconds",
+      );
       return;
     }
     _notifyListeners();
   }
 
   /// Runs an [action] and notifies the relevant listeners of any changes that occur
-  FutureOr<void> runAndUpdate<T>({
+  FutureOr<void> perform<T>({
     void Function()? beforeAction,
-    required FutureOr<T> Function()? action,
+    FutureOr<T> Function()? action,
     void Function()? afterAction,
     void Function(Object e)? onError,
-  }) {
+  }) async {
     if (beforeAction != null) {
       beforeAction();
       shake();
     }
-
-    void after() {
-      if (afterAction != null) {
-        afterAction();
-        shake();
-      }
-    }
-
     if (action == null) return null;
-    void handleError(Object e) {
+    try {
+      await action();
+      shake();
+    } catch (e) {
       if (onError == null) throw e;
       onError(e);
       shake();
     }
-
-    if (action is Future<T> Function()) {
-      return action()
-          .then((_) => shake(), onError: handleError)
-          .whenComplete(after);
-    } else {
-      try {
-        action();
-        shake();
-      } catch (e) {
-        handleError(e);
-      }
-      after();
+    if (afterAction != null) {
+      afterAction();
+      shake();
     }
   }
 
@@ -86,8 +72,8 @@ class Bolter {
   }
 
   void _notifyListeners() {
-    _listeners.forEach((listener, _) {
-      final hash = ComparableWrapper(_listeners[listener]!.call()).hashCode;
+    _listeners.forEach((listener, getter) {
+      final hash = ComparableWrapper(getter()).hashCode;
       if (hash != _hashCache[listener]) {
         listener();
         _hashCache[listener] = hash;

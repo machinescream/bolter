@@ -1,10 +1,4 @@
-import 'dart:async';
-import 'package:flutter/material.dart';
-import 'package:bolter/src/bolter_core.dart';
-
-part '../presenter/presenter.dart';
-part '../presenter/presenter_provider.dart';
-part 'bolter_builder.dart';
+part of bolter;
 
 class BolterProvider extends InheritedWidget {
   final Bolter _bolter;
