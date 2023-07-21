@@ -1,6 +1,7 @@
 part of bolter;
 
-class _PresenterProviderElement<P extends Presenter<P>> extends InheritedElement {
+class _PresenterProviderElement<P extends Presenter<P>>
+    extends InheritedElement {
   final P presenter;
   _PresenterProviderElement(super.widget, this.presenter);
 
@@ -15,6 +16,11 @@ class _PresenterProviderElement<P extends Presenter<P>> extends InheritedElement
     super.mount(parent, newSlot);
     presenter._context = this;
     presenter.init();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        presenter.onLayout();
+      }
+    });
   }
 }
 
@@ -38,8 +44,9 @@ class PresenterProvider<P extends Presenter<P>> extends InheritedWidget {
   }
 
   static P of<P extends Presenter<P>>(BuildContext context) {
-    return (context
-        .getElementForInheritedWidgetOfExactType<PresenterProvider<P>>()! as _PresenterProviderElement<P>).presenter;
+    return (context.getElementForInheritedWidgetOfExactType<
+            PresenterProvider<P>>()! as _PresenterProviderElement<P>)
+        .presenter;
   }
 }
 
