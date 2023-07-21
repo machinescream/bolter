@@ -19,7 +19,7 @@ abstract class Presenter<P extends Presenter<P>> {
   /// Called when the presenter is first created.
   /// This method can be overridden to perform additional initialization.
   @protected
-  void initState() {}
+  void init() {}
 
   /// Called when the presenter is being disposed.
   /// This method should be overridden to release any resources held by the presenter.
