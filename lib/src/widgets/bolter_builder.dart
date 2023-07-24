@@ -1,6 +1,32 @@
 part of bolter;
 
-class BolterBuilder<T> extends StatefulWidget {
+class _BolterBuilderElement<T> extends StatelessElement {
+  final T Function() getter;
+  _BolterBuilderElement(super.widget, this.getter);
+
+  late final _bolter = bolter;
+
+  @override
+  bool get debugDoingBuild => false;
+
+  @override
+  void deactivate() {
+    _bolter.stopListen(_notification);
+    super.deactivate();
+  }
+
+  @override
+  void mount(Element? parent, Object? newSlot) {
+    super.mount(parent, newSlot);
+    _bolter.listen(getter, _notification);
+  }
+
+  void _notification() {
+    markNeedsBuild();
+  }
+}
+
+class BolterBuilder<T> extends StatelessWidget {
   final T Function() getter;
   final Widget Function(BuildContext context, T value) builder;
 
@@ -11,45 +37,12 @@ class BolterBuilder<T> extends StatefulWidget {
   });
 
   @override
-  _BolterBuilderState<T> createState() => _BolterBuilderState<T>();
-}
-
-class _BolterBuilderState<T> extends State<BolterBuilder<T>> {
-  late final _bolter = context.bolter;
-
-  Getter get _getter => widget.getter;
-
-  @override
-  void initState() {
-    super.initState();
-    _bolter.listen(_getter, _notification);
-  }
-
-  @override
-  void didUpdateWidget(BolterBuilder<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.getter != widget.getter) {
-      _bolter.stopListen(_notification);
-      _bolter.listen(_getter, _notification);
-    }
+  StatelessElement createElement() {
+    return _BolterBuilderElement(this, getter);
   }
 
   @override
   Widget build(BuildContext context) {
-    final getter = _getter;
-    return widget.builder(
-      context,
-      getter(),
-    );
-  }
-
-  @override
-  void dispose() {
-    _bolter.stopListen(_notification);
-    super.dispose();
-  }
-
-  void _notification() {
-    setState(() {});
+    return builder(context, getter());
   }
 }

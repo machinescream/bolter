@@ -39,11 +39,8 @@ class MyPresenter extends Presenter<MyPresenter> {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    MediaQuery.of(context).size.height;
-    print('parent builded');
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(

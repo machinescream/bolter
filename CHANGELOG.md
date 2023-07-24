@@ -1,5 +1,6 @@
 # Changelog
 
+- **3.6.1** - BolterBuilder element based lifecycle
 - **3.5.0** - Refactoring of codebase
 - **3.4.0** - Added Flutter support
 - **3.3.0** - Updated to Dart 3.0
