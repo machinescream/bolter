@@ -56,7 +56,7 @@ abstract class Presenter<P extends Presenter<P>> {
       await action();
     } catch (e) {
       if (onError == null) throw e;
-      if(!_disposed) onError(e);
+      if (!_disposed) onError(e);
     }
     _shakeAndRunIfNotDisposed(() => _processing = false);
     if (afterAction != null) {
@@ -64,8 +64,8 @@ abstract class Presenter<P extends Presenter<P>> {
     }
   }
 
-  void _shakeAndRunIfNotDisposed([Function? action]){
-    if(_disposed) return;
+  void _shakeAndRunIfNotDisposed([Function? action]) {
+    if (_disposed) return;
     action?.call();
     _bolter.shake();
   }

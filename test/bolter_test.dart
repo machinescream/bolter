@@ -48,6 +48,5 @@ void main() {
       expect(count1, 0);
       expect(count2, 0);
     });
-
   });
 }
