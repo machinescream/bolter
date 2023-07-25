@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:equatable/equatable.dart';
 
 bool kProfileBolterPerformanceLogging = false;
@@ -28,32 +27,6 @@ class Bolter {
       return;
     }
     _notifyListeners();
-  }
-
-  /// Runs an [action] and notifies the relevant listeners of any changes that occur
-  FutureOr<void> perform<T>({
-    void Function()? beforeAction,
-    FutureOr<T> Function()? action,
-    void Function()? afterAction,
-    void Function(Object e)? onError,
-  }) async {
-    if (beforeAction != null) {
-      beforeAction();
-      shake();
-    }
-    if (action == null) return null;
-    try {
-      await action();
-      shake();
-    } catch (e) {
-      if (onError == null) throw e;
-      onError(e);
-      shake();
-    }
-    if (afterAction != null) {
-      afterAction();
-      shake();
-    }
   }
 
   /// Removes a listener from the registered listeners.

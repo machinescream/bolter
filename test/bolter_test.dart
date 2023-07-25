@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:bolter/src/bolter_core.dart';
 import 'package:test/test.dart';
 
@@ -50,17 +49,5 @@ void main() {
       expect(count2, 0);
     });
 
-    test('should run action and update on runAndUpdate', () async {
-      int count = 0;
-      final getter = () => count;
-      final listener = () => count++;
-      final action = () async =>
-          await Future.delayed(Duration(milliseconds: 100), () => count++);
-
-      bolter.listen(getter, listener);
-      await bolter.perform(action: action);
-
-      expect(count, 2);
-    });
   });
 }

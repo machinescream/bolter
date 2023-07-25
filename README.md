@@ -46,7 +46,7 @@ class CounterPresenter extends Presenter<CounterPresenter> {
 
 ```dart
 PresenterProvider<CounterPresenter>(
-  presenter: CounterPresenter(),
+  presenter: () => CounterPresenter(),
   child: MyHomePage(),
 )
 ```
