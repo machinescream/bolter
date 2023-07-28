@@ -9,13 +9,16 @@ abstract class Presenter<P extends Presenter<P>> {
   late BuildContext _context;
 
   var _disposed = false;
-  var _processing = false;
+  var _processingState = <Function, bool>{};
 
   /// Returns the current [BuildContext] for the presenter.
   BuildContext get context => _context;
-
   bool get disposed => _disposed;
-  bool get processing => _processing;
+
+  bool processing(Function methodSignature) {
+    final processing = _processingState[methodSignature];
+    return processing ?? false;
+  }
 
   /// Called when the layout phase of the frame is complete.
   /// This method can be overridden to perform additional actions.
@@ -44,27 +47,47 @@ abstract class Presenter<P extends Presenter<P>> {
   FutureOr<void> perform<T>({
     void Function()? beforeAction,
     FutureOr<T> Function()? action,
-    void Function()? afterAction,
+    void Function(T result)? onResult,
     void Function(Object e)? onError,
+    void Function()? afterAction,
+    Function? methodSignature,
   }) async {
     if (beforeAction != null) {
-      _shakeAndRunIfNotDisposed(beforeAction);
+      _runAndShakeIfNotDisposed(beforeAction);
     }
     if (action == null) return;
-    _shakeAndRunIfNotDisposed(() => _processing = true);
+    _runAndShakeIfNotDisposed(
+      () => _setProcessingState(methodSignature, true),
+    );
     try {
-      await action();
+      late T result;
+      if (action is Future<T> Function()) {
+        result = await action();
+      } else if (action is T Function()) {
+        result = action();
+      }
+      if (onResult != null) {
+        _runAndShakeIfNotDisposed(() => onResult(result));
+      }
     } catch (e) {
       if (onError == null) throw e;
-      if (!_disposed) onError(e);
+      _runAndShakeIfNotDisposed(() => onError(e));
     }
-    _shakeAndRunIfNotDisposed(() => _processing = false);
+    _runAndShakeIfNotDisposed(
+      () => _setProcessingState(methodSignature, false),
+    );
     if (afterAction != null) {
-      _shakeAndRunIfNotDisposed(afterAction);
+      _runAndShakeIfNotDisposed(afterAction);
     }
   }
 
-  void _shakeAndRunIfNotDisposed([Function? action]) {
+  void _setProcessingState(Function? methodSignature, bool value) {
+    if (methodSignature != null) {
+      _processingState[methodSignature] = value;
+    }
+  }
+
+  void _runAndShakeIfNotDisposed([Function? action]) {
     if (_disposed) return;
     action?.call();
     _bolter.shake();

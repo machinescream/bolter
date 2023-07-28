@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:bolter/bolter.dart';
 import 'package:flutter/material.dart';
 
@@ -12,8 +11,21 @@ class MyPresenter extends Presenter<MyPresenter> {
     print('presenter created');
   }
 
-  void incr() {
-    perform(action: () => i++);
+  void incSync() {
+    perform(
+      action: () => i++,
+      methodSignature: incSync,
+    );
+  }
+
+  void incAsync() {
+    perform(
+      action: () async {
+        await Future.delayed(const Duration(milliseconds: 1000));
+        i++;
+      },
+      methodSignature: incAsync,
+    );
   }
 
   var i = 0;
@@ -67,38 +79,41 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late final presenter = context.presenter<MyPresenter>();
 
-  void _incrementCounter() {
-    presenter.incr();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BolterBuilder<int>(
-        getter: () => presenter.i,
-        builder: (context, val) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-              title: Text(widget.title),
+    return Scaffold(
+          appBar: AppBar(
+            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            title: Text(widget.title),
+          ),
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                BolterBuilder<bool>(
+                  getter: () => presenter.processing(presenter.incAsync),
+                  builder: (_, val) => Text(val.toString()),
+                ),
+                BolterBuilder<int>(
+                    getter: () => presenter.i,
+                    builder: (context, val) {
+                      return Text(
+                        '$val',
+                        style: Theme.of(context).textTheme.headlineMedium,
+                      );
+                    }),
+              ],
             ),
-            body: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  const Text('You have pushed the button this many times:'),
-                  Text(
-                    '$val',
-                    style: Theme.of(context).textTheme.headlineMedium,
-                  ),
-                ],
-              ),
-            ),
-            floatingActionButton: FloatingActionButton(
-              onPressed: _incrementCounter,
-              tooltip: 'Increment',
-              child: const Icon(Icons.add),
-            ),
-          );
-        });
+          ),
+          floatingActionButton: BolterBuilder(
+            getter: () => presenter.processing(presenter.incAsync),
+            builder: (context, value) {
+              return FloatingActionButton(
+                onPressed: value ? null : presenter.incAsync,
+                child: const Icon(Icons.add),
+              );
+            }
+          ),
+        );
   }
 }

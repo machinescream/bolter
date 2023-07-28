@@ -1,5 +1,6 @@
 # Changelog
 
+- **3.7.0** - Universal processing handler for methods state
 - **3.6.2** - Additional properties for presenter
 - **3.6.1** - BolterBuilder element based lifecycle
 - **3.5.0** - Refactoring of codebase
