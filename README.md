@@ -1,85 +1,89 @@
-# Introducing Bolter State Manager 🚀
+# Bolter - Dart State Management Solution
 
-Welcome to **Bolter**, a **robust**, **easy-to-use**, and **memory-efficient** state management solution for Flutter. Bolter's **zero-boilerplate** approach empowers you to build high-performance applications with clean, maintainable code. Bolter streamlines your app's UI updates, making them global yet precisely targeted, and eliminating manual presenter transitions.
+Bolter is an innovative state management library for Flutter, tailored for speed and efficiency. It leverages mutable variables alongside their hashcodes to intelligently determine when UI updates are necessary, ensuring a fast and responsive user experience.
 
-## 🌟 Features
+## Features
 
-- 🚀 **Superior Performance**: Bolter ensures your app runs smoothly and efficiently, delivering outstanding performance.
-- 💡 **Zero Boilerplate**: With Bolter, you manage your app's state with minimal code, reducing complexity and accelerating development time.
-- 🎁 **Method Signature State Tracking**: Pass method signatures to track their execution state. This feature reduces boilerplate, enhances readability and allows to manage the asynchronous state of your application.
-- 🧠 **Memory and Computation Efficiency**: Bolter uses hashcode calculations instead of copy and object comparisons, enhancing efficiency and minimizing unnecessary widget rebuilds.
-- 🔄 **Automatic and Precise UI Updates**: Bolter simplifies UI updates, making them globally available and pinpointing updates where necessary. No more manual transitions!
-- 💎 **Simplicity**: Bolter is intuitive to understand and straightforward to integrate, simplifying your state management tasks.
-- 🎯 **Scoped State**: With Bolter, manage state for specific parts of your app, enabling precise control over updates and rendering. Bolter updates only the relevant parts of the widget tree, avoiding unnecessary rebuilds.
-- 🔧 **Flexible**: Bolter is compatible with various app architectures, providing the flexibility to choose the approach that suits your needs best.
+- **Efficient State Management**: Bolter uses mutable variables and hashcode comparison to reduce unnecessary UI rebuilds, updating only when required.
 
-## 📚 Getting Started in Minutes
+- **State Listener Optimization**: Register state listeners with ease. Bolter ensures only relevant widgets are updated, minimizing performance overhead.
 
-Embark on your Bolter journey with these simple steps:
+- **Lifecycle Management**: Bolter automatically manages listener lifecycle, attaching and detaching them in sync with widget lifecycle events.
 
-1. Add the `bolter` package to your `pubspec.yaml` file:
+- **Presenter Pattern Integration**: The library employs a presenter pattern, cleanly separating business logic from UI, resulting in more maintainable code.
 
-```yaml
-dependencies:
-  bolter:
-```
+- **Async Operation Handling**: Bolter's `perform` method seamlessly handles asynchronous operations, updating state and notifying listeners upon completion, while also managing loading states and errors.
 
-2. Import the `bolter` package in your Dart files:
+- **Disposed State Check**: The `perform` method includes a check for the disposed state of the presenter, preventing state updates on widgets that are no longer in the widget tree, thus avoiding memory leaks and unnecessary operations.
+
+- **Performance Logging**: For debugging, Bolter can log the performance of state updates, aiding in identifying bottlenecks.
+
+- **Boilerplate Reduction**: By simplifying state management, Bolter allows developers to write more concise and readable code.
+
+## Example Usage
 
 ```dart
-import 'package:bolter/bolter.dart';
-```
-
-3. Define your custom presenter classes that extend `Presenter`:
-```dart
-class CounterPresenter extends Presenter<CounterPresenter> {
+class MyPresenter extends Presenter<MyPresenter> {
   int _counter = 0;
 
   int get counter => _counter;
 
-  void incrementCounter() {
+  void incrementSync() {
+    perform(action: () => _counter++);
+  }
+
+  void incrementAsync() {
     perform(
-      action: () => _counter++,
-      methodSignature: incrementCounter,
+      action: () async {
+        await Future.delayed(const Duration(milliseconds: 500));
+        _counter++;
+      },
+      methodSignature: incrementAsync, // Optional: use for identifying the method in processing checks.
+    );
+  }
+
+  @override
+  void dispose() {
+    // Custom disposal logic can go here.
+    super.dispose();
+  }
+}
+
+class CounterWidget extends StatelessWidget with PresenterMixin<MyPresenter> {
+  @override
+  Widget build(BuildContext context) {
+    final myPresenter = presenter(context);
+
+    return Column(
+      children: [
+        BolterBuilder<int>(
+          getter: () => myPresenter.counter,
+          builder: (context, counter) => Text('Counter: $counter'),
+        ),
+        ElevatedButton(
+          onPressed: myPresenter.incrementSync,
+          child: Text('Increment Sync'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (!myPresenter.processing(myPresenter.incrementAsync)) {
+              myPresenter.incrementAsync();
+            }
+          },
+          child: Text('Increment Async'),
+        ),
+      ],
     );
   }
 }
 ```
 
-4. Inject your presenter classes using `PresenterProvider`:
+In this example, `MyPresenter` provides synchronous and asynchronous methods to increment a counter, demonstrating the use of the `perform` method. It also illustrates how to check if an async operation is currently processing before invoking it again.
 
-```dart
-PresenterProvider<CounterPresenter>(
-  presenter: () => CounterPresenter(),
-  child: MyHomePage(),
-)
-```
+## Getting Started
 
-5. Access the presenter and manage state within your widgets using the extension method:
+To use Bolter in your Flutter application, add it to your project as a dependency. Then, explore the documentation and examples to integrate Bolter into your app effectively.
 
-```dart
-final presenter = context.presenter<CounterPresenter>();
-```
+## Contribution
 
-6. Use `BolterBuilder` to rebuild widgets in response to state changes and manage the asynchronous state of methods. For instance, you can use it to disable a button while a method is being executed:
-
-```dart
-BolterBuilder<bool>(
-  getter: () => presenter.processing(presenter.incrementCounter),
-  builder: (context, isProcessing) => RaisedButton(
-    onPressed: isProcessing ? null : presenter.incrementCounter,
-    child: Text(isProcessing ? 'Processing...' : 'Increment'),
-  ),
-)
-```
-
-With these simple steps, Bolter is primed to efficiently manage your app's state, offering automatic, globally available, yet precise UI updates. 
-
-## 🚀 Performance Demo
-![ezgif-2-578482560a.webp](https://drive.google.com/uc?id=1KeoVrDXl_TiZR1Te_26DsInDzgIfdD6p)
-
-## 📈 Elevate Your App's Performance Today!
-
-Embrace the simplicity and efficiency of Bolter. With **zero boilerplate**, **memory efficiency**, **automatic, precise UI updates**, and **method signature state tracking**, Bolter is the heart of modern Flutter applications. Start using Bolter now and experience the difference!
-
-For any questions, suggestions, or feedback, please feel free to reach out to us on GitHub. Happy coding!
+We welcome contributions! If you've identified an improvement or want to contribute code, please submit an issue or a pull request.
