@@ -8,7 +8,7 @@ void main() {
 
 class MyPresenter extends Presenter<MyPresenter> {
   MyPresenter() {
-    print('presenter created');
+    debugPrint('presenter created');
   }
 
   void incSync() {
@@ -33,17 +33,17 @@ class MyPresenter extends Presenter<MyPresenter> {
   @override
   void init() {
     super.init();
-    print('init');
+    debugPrint('init');
   }
 
   @override
   FutureOr<void> onLayout() {
-    print('onLayout');
+    debugPrint('onLayout');
   }
 
   @override
   void dispose() {
-    print('dispose');
+    debugPrint('dispose');
     super.dispose();
   }
 }
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatefulWidget with PresenterMixin<MyPresenter>{
   const MyHomePage({super.key, required this.title});
 
   final String title;
@@ -77,7 +77,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  late final presenter = context.presenter<MyPresenter>();
+  late final presenter = widget.presenter(context);
 
   @override
   Widget build(BuildContext context) {

@@ -1,5 +1,32 @@
 part of bolter;
 
+class PresenterProvider<P extends Presenter<P>> extends InheritedWidget {
+  final P Function() presenter;
+  final PresenterMixin<P> child;
+
+  PresenterProvider({
+    super.key,
+    required this.child,
+    required this.presenter,
+  }) : super(child: child);
+
+  @override
+  InheritedElement createElement() {
+    return _PresenterProviderElement(this, presenter());
+  }
+
+  @override
+  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
+    return false;
+  }
+
+  static P of<P extends Presenter<P>>(BuildContext context) {
+    return (context.getElementForInheritedWidgetOfExactType<
+            PresenterProvider<P>>()! as _PresenterProviderElement<P>)
+        .presenter;
+  }
+}
+
 class _PresenterProviderElement<P extends Presenter<P>>
     extends InheritedElement {
   final P presenter;
@@ -21,32 +48,6 @@ class _PresenterProviderElement<P extends Presenter<P>>
         presenter.onLayout();
       }
     });
-  }
-}
-
-class PresenterProvider<P extends Presenter<P>> extends InheritedWidget {
-  final P Function() presenter;
-
-  PresenterProvider({
-    super.key,
-    required child,
-    required this.presenter,
-  }) : super(child: child);
-
-  @override
-  InheritedElement createElement() {
-    return _PresenterProviderElement(this, presenter());
-  }
-
-  @override
-  bool updateShouldNotify(covariant InheritedWidget oldWidget) {
-    return false;
-  }
-
-  static P of<P extends Presenter<P>>(BuildContext context) {
-    return (context.getElementForInheritedWidgetOfExactType<
-            PresenterProvider<P>>()! as _PresenterProviderElement<P>)
-        .presenter;
   }
 }
 
