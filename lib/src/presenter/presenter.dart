@@ -56,9 +56,7 @@ abstract class Presenter<P extends Presenter<P>> {
       _runAndShakeIfNotDisposed(beforeAction);
     }
     if (action == null) return;
-    _runAndShakeIfNotDisposed(
-      () => _setProcessingState(methodSignature, true),
-    );
+    _setProcessingState(methodSignature, true);
     try {
       late T result;
       if (action is Future<T> Function()) {
@@ -73,9 +71,7 @@ abstract class Presenter<P extends Presenter<P>> {
       if (onError == null) throw e;
       _runAndShakeIfNotDisposed(() => onError(e));
     }
-    _runAndShakeIfNotDisposed(
-      () => _setProcessingState(methodSignature, false),
-    );
+    _setProcessingState(methodSignature, false);
     if (afterAction != null) {
       _runAndShakeIfNotDisposed(afterAction);
     }
@@ -83,7 +79,7 @@ abstract class Presenter<P extends Presenter<P>> {
 
   void _setProcessingState(Function? methodSignature, bool value) {
     if (methodSignature != null) {
-      _processingState[methodSignature] = value;
+      _runAndShakeIfNotDisposed(() => _processingState[methodSignature] = value);
     }
   }
 

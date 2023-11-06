@@ -1,5 +1,6 @@
 # Changelog
 
+- **3.8.1** - method signature processing state unnecessary shake call removed
 - **3.8.0** - statically typed widgets for presenterProvider
 - **3.7.1** - readme upd
 - **3.7.0** - Universal processing handler for methods state
